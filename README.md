@@ -1,6 +1,31 @@
 # motogp_backend
 
-# Cách đặt tên nhánh
+
+#1 Cách đặt tên các đầu API theo chuẩn restful naming. Tham khảo thêm https://restfulapi.net/resource-naming/
+````
+      Ví dụ cụ thể viết api cho quản lý người dùng
+      1. Thêm mới một người dùng
+         Method POST
+         Naming api : $HOST/api/v1/users
+
+      2. Tìm kiếm thông tin người dùng
+         Method GET
+         Naming api : $HOST/api/v1/users
+      
+      3. Lấy thông tin chi tiết một người dùng theo userId trong đó userId là ID của người dùng trong bảng User
+         Method GET
+         Naming api: $HOST/api/v1/users/{userId}
+      
+      4. Cập nhật thông tin cho một người dùng theo userId
+         Method PUT
+         Naming api: $HOST/api/v1/users/{userId}
+      
+      5. Xóa thông tin một người dùng theo userId
+         Method DELETE
+         Naming api: $HOST/api/v1/users/{userId}
+````
+
+#2 Cách đặt tên nhánh
 ````
       1 Nhánh master: nhánh chính chứa source code ổn định, đã được kiểm tra. 
       
@@ -17,7 +42,7 @@
 ````
 
 
-# Cách comment commit theo 
+#3 Cách comment commit theo 
 ````
       Cấu trúc:
       <type>[scope]: <description>
