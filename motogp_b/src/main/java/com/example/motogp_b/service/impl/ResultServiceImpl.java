@@ -18,7 +18,7 @@ import java.util.List;
 public class ResultServiceImpl implements ResultService {
     ResultRepository resultRepository;
     ModelMapper modelMapper;
-    
+
     @Override
     public List<ResultDto> findAll() {
         return resultRepository.findAll().stream()

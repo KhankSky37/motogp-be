@@ -18,7 +18,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     UserRepository userRepository;
     ModelMapper modelMapper;
-    
+
     @Override
     public List<UserDto> findAll() {
         return userRepository.findAll().stream()
@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     public UserDto findById(String id) {
         return modelMapper.map(userRepository.findById(id), UserDto.class);
     }
-    
+
     @Override
     public UserDto findByUsername(String username) {
         return modelMapper.map(userRepository.findByUsername(username), UserDto.class);

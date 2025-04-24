@@ -18,7 +18,7 @@ import java.util.List;
 public class RiderServiceImpl implements RiderService {
     RiderRepository riderRepository;
     ModelMapper modelMapper;
-    
+
     @Override
     public List<RiderDto> findAll() {
         return riderRepository.findAll().stream()

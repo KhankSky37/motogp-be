@@ -18,7 +18,7 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
     CategoryRepository categoryRepository;
     ModelMapper modelMapper;
-    
+
     @Override
     public List<CategoryDto> findAll() {
         return categoryRepository.findAll().stream()

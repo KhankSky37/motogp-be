@@ -18,7 +18,7 @@ import java.util.List;
 public class EventServiceImpl implements EventService {
     EventRepository eventRepository;
     ModelMapper modelMapper;
-    
+
     @Override
     public List<EventDto> findAll() {
         return eventRepository.findAll().stream()

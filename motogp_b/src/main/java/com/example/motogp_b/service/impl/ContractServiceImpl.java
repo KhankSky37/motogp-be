@@ -18,7 +18,7 @@ import java.util.List;
 public class ContractServiceImpl implements ContractService {
     ContractRepository contractRepository;
     ModelMapper modelMapper;
-    
+
     @Override
     public List<ContractDto> findAll() {
         return contractRepository.findAll().stream()

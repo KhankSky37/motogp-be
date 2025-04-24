@@ -18,7 +18,7 @@ import java.util.List;
 public class ManufacturerServiceImpl implements ManufacturerService {
     ManufacturerRepository manufacturerRepository;
     ModelMapper modelMapper;
-    
+
     @Override
     public List<ManufacturerDto> findAll() {
         return manufacturerRepository.findAll().stream()

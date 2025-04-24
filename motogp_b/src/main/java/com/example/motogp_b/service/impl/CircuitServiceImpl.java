@@ -18,7 +18,7 @@ import java.util.List;
 public class CircuitServiceImpl implements CircuitService {
     CircuitRepository circuitRepository;
     ModelMapper modelMapper;
-    
+
     @Override
     public List<CircuitDto> findAll() {
         return circuitRepository.findAll().stream()

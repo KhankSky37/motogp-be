@@ -18,7 +18,7 @@ import java.util.List;
 public class SessionServiceImpl implements SessionService {
     SessionRepository sessionRepository;
     ModelMapper modelMapper;
-    
+
     @Override
     public List<SessionDto> findAll() {
         return sessionRepository.findAll().stream()

@@ -18,7 +18,7 @@ import java.util.List;
 public class NewsArticleServiceImpl implements NewsArticleService {
     NewsArticleRepository newsArticleRepository;
     ModelMapper modelMapper;
-    
+
     @Override
     public List<NewsArticleDto> findAll() {
         return newsArticleRepository.findAll().stream()
