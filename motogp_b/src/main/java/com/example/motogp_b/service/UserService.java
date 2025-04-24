@@ -9,8 +9,6 @@ public interface UserService {
 
     UserDto findById(String id);
 
-    UserDto findByUsername(String username);
-
     UserDto create(UserDto userDto);
 
     UserDto update(String id, UserDto userDto);

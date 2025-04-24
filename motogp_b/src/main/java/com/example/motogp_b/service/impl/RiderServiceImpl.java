@@ -34,6 +34,10 @@ public class RiderServiceImpl implements RiderService {
     @Override
     public RiderDto create(RiderDto riderDto) {
         Rider rider = modelMapper.map(riderDto, Rider.class);
+        if(riderRepository.existsByRiderId(rider.getRiderId())){
+            throw new RuntimeException("Rider with this ID already exists");
+        }
+
         return modelMapper.map(riderRepository.save(rider), RiderDto.class);
     }
 
