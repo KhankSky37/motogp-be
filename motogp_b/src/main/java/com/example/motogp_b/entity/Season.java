@@ -18,27 +18,11 @@ import java.util.Date;
 @Setter
 @Entity
 @Table(name = "season")
-public class Season {
+public class Season extends BaseEntity{
     @Id
     @Column(name = "season_id", nullable = false)
     private Integer id;
 
     @Column(name = "name")
     private String name;
-
-    @CreatedDate
-    @Column(name = "created_date")
-    LocalDateTime createdDate;
-
-    @CreatedBy
-    @Column(name = "created_user")
-    String createUser;
-
-    @LastModifiedDate
-    @Column(name = "modified_date")
-    Date modifiedDate;
-
-    @LastModifiedBy
-    @Column(name = "modified_user")
-    String modifiedUser;
 }

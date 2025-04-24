@@ -21,12 +21,6 @@ import java.util.Date;
 @Getter
 @Setter
 public class BaseEntity {
-    @Id
-    @Column(name = "id", nullable = false)
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    private String id;
-
     @CreatedDate
     @Column(name = "created_date")
     LocalDateTime createdDate;
