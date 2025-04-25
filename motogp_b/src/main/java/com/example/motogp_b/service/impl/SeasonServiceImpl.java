@@ -12,13 +12,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SeasonServiceImpl implements SeasonService {
     SeasonRepository seasonRepository;
     ModelMapper modelMapper;
+
     @Override
     public List<SeasonDto> findAll() {
         return seasonRepository.findAll().stream()
@@ -33,12 +33,22 @@ public class SeasonServiceImpl implements SeasonService {
 
     @Override
     public SeasonDto create(SeasonDto seasonDto) {
+        // Kiểm tra xem ID đã tồn tại chưa
+        if (seasonRepository.existsById(seasonDto.getId())) {
+            throw new RuntimeException("ID mùa giải đã tồn tại. Vui lòng sử dụng ID khác.");
+        }
+
         Season season = modelMapper.map(seasonDto, Season.class);
         return modelMapper.map(seasonRepository.save(season), SeasonDto.class);
     }
 
     @Override
     public SeasonDto update(Integer id, SeasonDto seasonDto) {
+        // Kiểm tra nếu ID mới khác với ID cũ và đã tồn tại
+        if (!id.equals(seasonDto.getId()) && seasonRepository.existsById(seasonDto.getId())) {
+            throw new RuntimeException("ID mùa giải đã tồn tại. Vui lòng sử dụng ID khác.");
+        }
+
         Season season = modelMapper.map(seasonDto, Season.class);
         return modelMapper.map(seasonRepository.save(season), SeasonDto.class);
     }

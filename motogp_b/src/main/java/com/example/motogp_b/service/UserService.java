@@ -9,7 +9,7 @@ public interface UserService {
 
     UserDto findById(String id);
 
-    UserDto findByUsername(String username);
+    UserDto findByUsername(String surname);
 
     UserDto create(UserDto userDto);
 

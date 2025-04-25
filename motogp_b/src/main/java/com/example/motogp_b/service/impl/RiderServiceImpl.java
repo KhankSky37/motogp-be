@@ -33,12 +33,22 @@ public class RiderServiceImpl implements RiderService {
 
     @Override
     public RiderDto create(RiderDto riderDto) {
+        // Kiểm tra xem ID đã tồn tại chưa
+        if (riderRepository.existsByRiderId(riderDto.getRiderId())) {
+            throw new RuntimeException("ID người lái đã tồn tại. Vui lòng sử dụng ID khác.");
+        }
+
         Rider rider = modelMapper.map(riderDto, Rider.class);
         return modelMapper.map(riderRepository.save(rider), RiderDto.class);
     }
 
     @Override
     public RiderDto update(String id, RiderDto riderDto) {
+        // Kiểm tra nếu ID mới khác với ID cũ và đã tồn tại
+        if (!id.equals(riderDto.getRiderId()) && riderRepository.existsByRiderId(riderDto.getRiderId())) {
+            throw new RuntimeException("ID người lái đã tồn tại. Vui lòng sử dụng ID khác.");
+        }
+
         Rider rider = modelMapper.map(riderDto, Rider.class);
         return modelMapper.map(riderRepository.save(rider), RiderDto.class);
     }

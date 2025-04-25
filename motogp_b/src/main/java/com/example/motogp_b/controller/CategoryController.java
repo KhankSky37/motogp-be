@@ -29,11 +29,13 @@ public class CategoryController {
 
     @GetMapping("/{id}")
     ResponseEntity<CategoryDto> getCategory(@PathVariable String id) {
+
         return ResponseEntity.ok(categoryService.findById(id));
     }
 
     @PutMapping("/{id}")
     ResponseEntity<CategoryDto> updateCategory(@PathVariable String id, @RequestBody CategoryDto categoryDto) {
+          
         return ResponseEntity.ok(categoryService.update(id, categoryDto));
     }
 
