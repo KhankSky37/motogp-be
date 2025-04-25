@@ -32,11 +32,6 @@ public class UserController {
         return ResponseEntity.ok(userService.findById(id));
     }
 
-    @GetMapping("/username/{username}")
-    ResponseEntity<UserDto> getUserByUsername(@PathVariable String username) {
-        return ResponseEntity.ok(userService.findByUsername(username));
-    }
-
     @PutMapping("/{id}")
     ResponseEntity<UserDto> updateUser(@PathVariable String id, @RequestBody UserDto userDto) {
         return ResponseEntity.ok(userService.update(id, userDto));
