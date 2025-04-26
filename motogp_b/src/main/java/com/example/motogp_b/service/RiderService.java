@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface RiderService {
-    List<RiderDto> findAll();
+    List<RiderDto> findAll(RiderDto riderDto);
 
     RiderDto findById(String id);
 

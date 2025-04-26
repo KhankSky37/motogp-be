@@ -26,4 +26,6 @@ public class RiderDto{
     String nationality;
     LocalDate dateOfBirth;
     String photoUrl;
+
+    String keyword;
 }

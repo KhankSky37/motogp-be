@@ -33,8 +33,8 @@ public class RiderServiceImpl implements RiderService {
     private static final String RIDER_SUBDIRECTORY = "riders";
 
     @Override
-    public List<RiderDto> findAll() {
-        return riderRepository.findAll().stream()
+    public List<RiderDto> findAll(RiderDto riderDto) {
+        return riderRepository.findAllRider(riderDto).stream()
                 .map(rider -> modelMapper.map(rider, RiderDto.class))
                 .toList();
     }

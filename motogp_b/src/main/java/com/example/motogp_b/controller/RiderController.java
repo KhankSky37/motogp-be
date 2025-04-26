@@ -20,8 +20,8 @@ public class RiderController {
     RiderService riderService;
 
     @GetMapping
-    ResponseEntity<List<RiderDto>> getRiders() {
-        return ResponseEntity.ok(riderService.findAll());
+    ResponseEntity<List<RiderDto>> getRiders(RiderDto riderDto) {
+        return ResponseEntity.ok(riderService.findAll(riderDto));
     }
 
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
