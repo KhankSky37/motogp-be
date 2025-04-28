@@ -5,6 +5,7 @@ import com.example.motogp_b.entity.Rider;
 import com.example.motogp_b.repository.RiderRepository;
 import com.example.motogp_b.service.FileStorageService;
 import com.example.motogp_b.service.RiderService;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -14,13 +15,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.UUID;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +43,7 @@ public class RiderServiceImpl implements RiderService {
     @Override
     public RiderDto create(RiderDto riderDto, MultipartFile photoFile) {
         Rider rider = modelMapper.map(riderDto, Rider.class);
-        if(riderRepository.existsByRiderId(rider.getRiderId())){
+        if (riderRepository.existsByRiderId(rider.getRiderId())) {
             throw new RuntimeException("Rider with this ID already exists");
         }
 
@@ -62,16 +58,41 @@ public class RiderServiceImpl implements RiderService {
         return modelMapper.map(savedRider, RiderDto.class);
     }
 
+
     @Override
-    public RiderDto update(String id, RiderDto riderDto) {
-        // Kiểm tra nếu ID mới khác với ID cũ và đã tồn tại
-        if (!id.equals(riderDto.getRiderId()) && riderRepository.existsByRiderId(riderDto.getRiderId())) {
-            throw new RuntimeException("ID người lái đã tồn tại. Vui lòng sử dụng ID khác.");
+    @Transactional
+    public RiderDto update(String id, RiderDto riderDto, MultipartFile photoFile) {
+        Rider existingRider = riderRepository.findById(id).orElseThrow(() -> new RuntimeException("Rider not found with ID: " + id));
+
+        String newRiderId = riderDto.getRiderId();
+        if (!Objects.equals(id, newRiderId) && riderRepository.existsByRiderId(newRiderId)) {
+            throw new RuntimeException("New Rider ID '" + newRiderId + "' already exists. Please use a different ID.");
         }
 
-        Rider rider = modelMapper.map(riderDto, Rider.class);
-        return modelMapper.map(riderRepository.save(rider), RiderDto.class);
+        String oldPhotoUrl = existingRider.getPhotoUrl();
+        String newPhotoUrl = oldPhotoUrl;
+
+        if (photoFile != null && !photoFile.isEmpty()) {
+            try {
+                if (StringUtils.hasText(oldPhotoUrl)) {
+                    try {
+                        fileStorageService.deleteFile(oldPhotoUrl);
+                    } catch (IOException e) {
+                        System.err.println("WARN: Could not delete old photo file: " + oldPhotoUrl + " - " + e.getMessage());
+                    }
+                }
+                newPhotoUrl = fileStorageService.storeFile(photoFile, RIDER_SUBDIRECTORY);
+            } catch (IOException e) {
+                throw new RuntimeException("Could not store new photo file for rider: " + newRiderId, e);
+            }
+        }
+        modelMapper.map(riderDto, existingRider);
+        existingRider.setPhotoUrl(newPhotoUrl);
+
+        Rider updatedRider = riderRepository.save(existingRider);
+        return modelMapper.map(updatedRider, RiderDto.class);
     }
+
 
     @Override
     public void deleteById(String id) {

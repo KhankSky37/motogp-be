@@ -12,7 +12,7 @@ public interface RiderService {
 
     RiderDto create(RiderDto riderDto, MultipartFile file);
 
-    RiderDto update(String id, RiderDto riderDto);
+    RiderDto update(String id, RiderDto riderDto, MultipartFile photoFile);
 
     void deleteById(String id);
 }
