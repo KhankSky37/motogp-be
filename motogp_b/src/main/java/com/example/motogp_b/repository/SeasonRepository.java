@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface SeasonRepository extends JpaRepository<Season, Integer> {
     boolean existsById(Integer id);
-    
+
     @Query("SELECT s FROM Season s WHERE LOWER(s.name) LIKE :keyword OR CAST(s.id AS string) LIKE :keyword")
     List<Season> search(@Param("keyword") String keyword);
 }
