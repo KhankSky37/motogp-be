@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -22,6 +23,24 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventDto> findAll() {
         return eventRepository.findAll().stream()
+                .map(event -> modelMapper.map(event, EventDto.class))
+                .toList();
+    }
+
+    @Override
+    public List<EventDto> findAllWithFilters(String keyword, String seasonId, String circuitId,
+            String eventType, String startDateFrom, String startDateTo) {
+        // Convert string dates to LocalDate if they're not null
+        LocalDate fromDate = startDateFrom != null && !startDateFrom.isEmpty() ? LocalDate.parse(startDateFrom) : null;
+        LocalDate toDate = startDateTo != null && !startDateTo.isEmpty() ? LocalDate.parse(startDateTo) : null;
+
+        // Convert seasonId to Integer if it's not null
+        Integer seasonIdInt = seasonId != null && !seasonId.isEmpty() ? Integer.parseInt(seasonId) : null;
+
+        List<Event> events = eventRepository.findAllWithFilters(
+                keyword, seasonIdInt, circuitId, eventType, fromDate, toDate);
+
+        return events.stream()
                 .map(event -> modelMapper.map(event, EventDto.class))
                 .toList();
     }

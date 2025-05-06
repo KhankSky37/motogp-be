@@ -5,6 +5,8 @@ import com.example.motogp_b.service.SeasonService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +20,8 @@ public class SeasonController {
     SeasonService seasonService;
     @GetMapping
     ResponseEntity<List<SeasonDto>> getSeasons() {
-        return ResponseEntity.ok(seasonService.findAll());
+    
+     return ResponseEntity.ok(seasonService.findAll());
     }
 
     @PostMapping

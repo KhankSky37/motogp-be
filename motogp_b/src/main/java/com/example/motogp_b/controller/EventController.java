@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -18,8 +19,16 @@ public class EventController {
     EventService eventService;
 
     @GetMapping
-    ResponseEntity<List<EventDto>> getEvents() {
-        return ResponseEntity.ok(eventService.findAll());
+    ResponseEntity<List<EventDto>> getEvents(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String seasonId,
+            @RequestParam(required = false) String circuitId,
+            @RequestParam(required = false) String eventType,
+            @RequestParam(required = false) String startDateFrom,
+            @RequestParam(required = false) String startDateTo) {
+
+        return ResponseEntity.ok(eventService.findAllWithFilters(
+                keyword, seasonId, circuitId, eventType, startDateFrom, startDateTo));
     }
 
     @PostMapping
