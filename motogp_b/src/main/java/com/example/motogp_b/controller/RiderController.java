@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile; // Import MultipartFile
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -20,11 +20,11 @@ public class RiderController {
     RiderService riderService;
 
     @GetMapping
-    ResponseEntity<List<RiderDto>> getRiders() {
-        return ResponseEntity.ok(riderService.findAll());
+    ResponseEntity<List<RiderDto>> getRiders(RiderDto riderDto) {
+        return ResponseEntity.ok(riderService.findAll(riderDto));
     }
 
-    @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     ResponseEntity<RiderDto> createRider(@RequestPart("rider") RiderDto riderDto,
                                          @RequestPart("photo") MultipartFile photoFile) {
         return ResponseEntity.ok(riderService.create(riderDto, photoFile));
@@ -35,10 +35,13 @@ public class RiderController {
         return ResponseEntity.ok(riderService.findById(id));
     }
 
-    @PutMapping("/{id}")
-    ResponseEntity<RiderDto> updateRider(@PathVariable String id, @RequestBody RiderDto riderDto) {
-        return ResponseEntity.ok(riderService.update(id, riderDto));
+    @PutMapping(value = "/{id}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    ResponseEntity<RiderDto> updateRider(@PathVariable String id,
+                                         @RequestPart("rider") RiderDto riderDto,
+                                         @RequestPart(value = "photo", required = false) MultipartFile photoFile) {
+        return ResponseEntity.ok(riderService.update(id, riderDto, photoFile));
     }
+
 
     @DeleteMapping("/{id}")
     ResponseEntity<?> deleteRider(@PathVariable String id) {
