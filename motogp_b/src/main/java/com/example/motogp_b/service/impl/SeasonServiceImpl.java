@@ -20,10 +20,17 @@ public class SeasonServiceImpl implements SeasonService {
     ModelMapper modelMapper;
 
     @Override
-    public List<SeasonDto> findAll() {
-        return seasonRepository.findAll().stream()
-                .map(season -> modelMapper.map(season, SeasonDto.class))
-                .toList();
+    public List<SeasonDto> findAll(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return seasonRepository.findAll().stream()
+                    .map(season -> modelMapper.map(season, SeasonDto.class))
+                    .toList();
+        } else {
+            String searchTerm = "%" + keyword.toLowerCase() + "%";
+            return seasonRepository.search(searchTerm).stream()
+                    .map(season -> modelMapper.map(season, SeasonDto.class))
+                    .toList();
+        }
     }
 
     @Override

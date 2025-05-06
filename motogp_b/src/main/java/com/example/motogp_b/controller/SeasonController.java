@@ -18,10 +18,10 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SeasonController {
     SeasonService seasonService;
-    @GetMapping
-    ResponseEntity<List<SeasonDto>> getSeasons() {
     
-     return ResponseEntity.ok(seasonService.findAll());
+    @GetMapping
+    ResponseEntity<List<SeasonDto>> getSeasons(@RequestParam(required = false) String keyword) {
+        return ResponseEntity.ok(seasonService.findAll(keyword));
     }
 
     @PostMapping

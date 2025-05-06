@@ -5,7 +5,7 @@ import com.example.motogp_b.dto.SessionDto;
 import java.util.List;
 
 public interface SessionService {
-    List<SessionDto> findAll();
+    List<SessionDto> findAll(String eventId, String categoryId, String sessionType, String dateFrom, String dateTo);
 
     SessionDto findById(String id);
 

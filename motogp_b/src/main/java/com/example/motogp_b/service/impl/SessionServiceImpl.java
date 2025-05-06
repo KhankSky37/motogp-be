@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -20,8 +21,21 @@ public class SessionServiceImpl implements SessionService {
     ModelMapper modelMapper;
 
     @Override
-    public List<SessionDto> findAll() {
-        return sessionRepository.findAll().stream()
+    public List<SessionDto> findAll(String eventId, String categoryId, String sessionType, String dateFrom, String dateTo) {
+        List<Session> sessions;
+        
+        if (eventId == null && categoryId == null && sessionType == null && dateFrom == null && dateTo == null) {
+            // No filters, return all
+            sessions = sessionRepository.findAll();
+        } else {
+            // Convert string dates to Instant if provided
+            Instant fromDate = dateFrom != null && !dateFrom.isEmpty() ? Instant.parse(dateFrom) : null;
+            Instant toDate = dateTo != null && !dateTo.isEmpty() ? Instant.parse(dateTo) : null;
+            
+            sessions = sessionRepository.search(eventId, categoryId, sessionType, fromDate, toDate);
+        }
+        
+        return sessions.stream()
                 .map(session -> modelMapper.map(session, SessionDto.class))
                 .toList();
     }

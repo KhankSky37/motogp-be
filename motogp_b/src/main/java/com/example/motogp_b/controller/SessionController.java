@@ -18,8 +18,13 @@ public class SessionController {
     SessionService sessionService;
 
     @GetMapping
-    ResponseEntity<List<SessionDto>> getSessions() {
-        return ResponseEntity.ok(sessionService.findAll());
+    ResponseEntity<List<SessionDto>> getSessions(
+            @RequestParam(required = false) String eventId,
+            @RequestParam(required = false) String categoryId,
+            @RequestParam(required = false) String sessionType,
+            @RequestParam(required = false) String dateFrom,
+            @RequestParam(required = false) String dateTo) {
+        return ResponseEntity.ok(sessionService.findAll(eventId, categoryId, sessionType, dateFrom, dateTo));
     }
 
     @PostMapping
