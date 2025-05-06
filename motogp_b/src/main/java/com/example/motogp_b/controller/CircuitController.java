@@ -5,8 +5,10 @@ import com.example.motogp_b.service.CircuitService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -18,13 +20,26 @@ public class CircuitController {
     CircuitService circuitService;
 
     @GetMapping
-    ResponseEntity<List<CircuitDto>> getCircuits() {
-        return ResponseEntity.ok(circuitService.findAll());
+    ResponseEntity<List<CircuitDto>> getCircuits(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String country) {
+        
+        CircuitDto circuitDto = new CircuitDto();
+        circuitDto.setKeyword(keyword);
+        
+        // Map country to locationCountry if provided
+        if (country != null && !country.isEmpty()) {
+            circuitDto.setLocationCountry(country);
+        }
+        
+        return ResponseEntity.ok(circuitService.findAll(circuitDto));
     }
 
-    @PostMapping
-    ResponseEntity<CircuitDto> createCircuit(@RequestBody CircuitDto circuitDto) {
-        return ResponseEntity.ok(circuitService.create(circuitDto));
+    @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    ResponseEntity<CircuitDto> createCircuit(
+            @RequestPart("circuit") CircuitDto circuitDto,
+            @RequestPart(value = "image", required = false) MultipartFile imageFile) {
+        return ResponseEntity.ok(circuitService.create(circuitDto, imageFile));
     }
 
     @GetMapping("/{id}")
@@ -32,9 +47,12 @@ public class CircuitController {
         return ResponseEntity.ok(circuitService.findById(id));
     }
 
-    @PutMapping("/{id}")
-    ResponseEntity<CircuitDto> updateCircuit(@PathVariable String id, @RequestBody CircuitDto circuitDto) {
-        return ResponseEntity.ok(circuitService.update(id, circuitDto));
+    @PutMapping(value = "/{id}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    ResponseEntity<CircuitDto> updateCircuit(
+            @PathVariable String id,
+            @RequestPart("circuit") CircuitDto circuitDto,
+            @RequestPart(value = "image", required = false) MultipartFile imageFile) {
+        return ResponseEntity.ok(circuitService.update(id, circuitDto, imageFile));
     }
 
     @DeleteMapping("/{id}")

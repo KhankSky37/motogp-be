@@ -26,4 +26,7 @@ public class CircuitDto {
     String locationCountry;
     Integer lengthKm;
     String imageUrl;
+
+    // For search functionality
+    String keyword;
 }

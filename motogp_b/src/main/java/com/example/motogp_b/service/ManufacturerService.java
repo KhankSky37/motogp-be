@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface ManufacturerService {
     List<ManufacturerDto> findAll();
+    
+    List<ManufacturerDto> findAll(ManufacturerDto manufacturerDto);
 
     ManufacturerDto findById(String id);
 

@@ -18,8 +18,19 @@ public class ManufacturerController {
     ManufacturerService manufacturerService;
 
     @GetMapping
-    ResponseEntity<List<ManufacturerDto>> getManufacturers() {
-        return ResponseEntity.ok(manufacturerService.findAll());
+    ResponseEntity<List<ManufacturerDto>> getManufacturers(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String country) {
+        
+        ManufacturerDto manufacturerDto = new ManufacturerDto();
+        manufacturerDto.setKeyword(keyword);
+        
+        // Map country to locationCountry if provided
+        if (country != null && !country.isEmpty()) {
+            manufacturerDto.setLocationCountry(country);
+        }
+        
+        return ResponseEntity.ok(manufacturerService.findAll(manufacturerDto));
     }
 
     @PostMapping

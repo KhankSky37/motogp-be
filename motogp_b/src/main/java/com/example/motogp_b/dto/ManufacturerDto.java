@@ -14,7 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ManufacturerDto{
+public class ManufacturerDto {
     LocalDateTime createdDate;
     String createUser;
     Date modifiedDate;
@@ -22,4 +22,7 @@ public class ManufacturerDto{
     String id;
     String name;
     String locationCountry;
+
+    // For search functionality
+    String keyword;
 }
