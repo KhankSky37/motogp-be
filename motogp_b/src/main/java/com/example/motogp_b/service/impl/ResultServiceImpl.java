@@ -25,10 +25,19 @@ public class ResultServiceImpl implements ResultService {
                 .map(result -> modelMapper.map(result, ResultDto.class))
                 .toList();
     }
+    @Override
+    public List<ResultDto> findAll(String sessionId, String riderId, String teamId, String manufacturerId, Integer position,
+            String status) {
+        return resultRepository.search(sessionId, riderId, teamId, manufacturerId, position, status).stream()
+                .map(result -> modelMapper.map(result, ResultDto.class))
+                .toList();
+    }
 
     @Override
     public ResultDto findById(String id) {
-        return modelMapper.map(resultRepository.findById(id), ResultDto.class);
+        return resultRepository.findById(id)
+                .map(result -> modelMapper.map(result, ResultDto.class))
+                .orElse(null);
     }
 
     @Override

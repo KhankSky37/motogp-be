@@ -18,8 +18,14 @@ public class ResultController {
     ResultService resultService;
 
     @GetMapping
-    ResponseEntity<List<ResultDto>> getResults() {
-        return ResponseEntity.ok(resultService.findAll());
+    ResponseEntity<List<ResultDto>> getResults(
+            @RequestParam(required = false) String sessionId,
+            @RequestParam(required = false) String riderId,
+            @RequestParam(required = false) String teamId,
+            @RequestParam(required = false) String manufacturerId,
+            @RequestParam(required = false) Integer position,
+            @RequestParam(required = false) String status) {
+        return ResponseEntity.ok(resultService.findAll(sessionId, riderId, teamId, manufacturerId, position, status));
     }
 
     @PostMapping
