@@ -19,5 +19,4 @@ public class Manufacturer extends BaseEntity {
 
     @Column(name = "location_country")
     private String locationCountry;
-
 }
