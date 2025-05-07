@@ -26,7 +26,7 @@ public class ManufacturerServiceImpl implements ManufacturerService {
                 .map(manufacturer -> modelMapper.map(manufacturer, ManufacturerDto.class))
                 .toList();
     }
-    
+
     @Override
     public List<ManufacturerDto> findAll(ManufacturerDto manufacturerDto) {
         return manufacturerRepository.findAllManufacturers(manufacturerDto).stream()

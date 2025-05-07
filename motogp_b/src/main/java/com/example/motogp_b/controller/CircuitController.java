@@ -23,15 +23,15 @@ public class CircuitController {
     ResponseEntity<List<CircuitDto>> getCircuits(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String country) {
-        
+
         CircuitDto circuitDto = new CircuitDto();
         circuitDto.setKeyword(keyword);
-        
+
         // Map country to locationCountry if provided
         if (country != null && !country.isEmpty()) {
             circuitDto.setLocationCountry(country);
         }
-        
+
         return ResponseEntity.ok(circuitService.findAll(circuitDto));
     }
 
