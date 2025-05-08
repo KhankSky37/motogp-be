@@ -23,5 +23,4 @@ public class Team extends BaseEntity {
 
     @Column(name = "logo_url")
     private String logoUrl;
-
 }
