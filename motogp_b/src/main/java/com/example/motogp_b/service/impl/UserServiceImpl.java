@@ -1,5 +1,6 @@
 package com.example.motogp_b.service.impl;
 
+import com.example.motogp_b.dto.PasswordDTO;
 import com.example.motogp_b.dto.UserDto;
 import com.example.motogp_b.entity.User;
 import com.example.motogp_b.repository.UserRepository;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
@@ -20,8 +23,8 @@ public class UserServiceImpl implements UserService {
     ModelMapper modelMapper;
 
     @Override
-    public List<UserDto> findAll() {
-        return userRepository.findAll().stream()
+    public List<UserDto> findAll(UserDto userDto) {
+        return userRepository.findAllUsers(userDto).stream()
                 .map(user -> modelMapper.map(user, UserDto.class))
                 .toList();
     }
@@ -34,13 +37,38 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto create(UserDto userDto) {
         User user = modelMapper.map(userDto, User.class);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         return modelMapper.map(userRepository.save(user), UserDto.class);
     }
 
     @Override
     public UserDto update(String id, UserDto userDto) {
         User user = modelMapper.map(userDto, User.class);
+        user.setId(id);
         return modelMapper.map(userRepository.save(user), UserDto.class);
+    }
+
+    @Override
+    public void updatePassword(String id, PasswordDTO passwordDTO) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+
+        if (!passwordEncoder.matches(passwordDTO.getOldPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Incorrect old password");
+        }
+
+        if (!passwordDTO.getNewPassword().equals(passwordDTO.getConfirmPassword())) {
+            throw new IllegalArgumentException("New password and confirm password do not match");
+        }
+
+        if (passwordDTO.getNewPassword().isEmpty()) {
+            throw new IllegalArgumentException("New password cannot be empty");
+        }
+
+        user.setPassword(passwordEncoder.encode(passwordDTO.getNewPassword()));
+        userRepository.save(user);
     }
 
     @Override

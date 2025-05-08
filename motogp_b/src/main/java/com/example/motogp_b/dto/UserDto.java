@@ -31,4 +31,6 @@ public class UserDto{
     String password;
     RiderDto riderFavourite;
     String role;
+
+    String keyword;
 }

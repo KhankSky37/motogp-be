@@ -1,5 +1,6 @@
 package com.example.motogp_b.controller;
 
+import com.example.motogp_b.dto.PasswordDTO;
 import com.example.motogp_b.dto.UserDto;
 import com.example.motogp_b.service.UserService;
 import lombok.AccessLevel;
@@ -18,8 +19,8 @@ public class UserController {
     UserService userService;
 
     @GetMapping
-    ResponseEntity<List<UserDto>> getUsers() {
-        return ResponseEntity.ok(userService.findAll());
+    ResponseEntity<List<UserDto>> getUsers(UserDto userDto) {
+        return ResponseEntity.ok(userService.findAll(userDto));
     }
 
     @PostMapping
@@ -35,6 +36,16 @@ public class UserController {
     @PutMapping("/{id}")
     ResponseEntity<UserDto> updateUser(@PathVariable String id, @RequestBody UserDto userDto) {
         return ResponseEntity.ok(userService.update(id, userDto));
+    }
+
+    @PutMapping("/change-password/{id}")
+    public ResponseEntity<String> changePasswordUser(@PathVariable("id") String id, @RequestBody PasswordDTO passwordDTO) {
+        try {
+            userService.updatePassword(id, passwordDTO);
+            return ResponseEntity.ok("Password updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.ok(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
