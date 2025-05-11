@@ -37,8 +37,9 @@ public class NewsArticleController {
 
     @PutMapping("/{id}")
     ResponseEntity<NewsArticleDto> updateNewsArticle(@PathVariable String id,
-            @RequestBody NewsArticleDto newsArticleDto) {
-        return ResponseEntity.ok(newsArticleService.update(id, newsArticleDto));
+                                                     @RequestPart("newsArticle") NewsArticleDto newsArticleDto,
+                                                     @RequestPart(value = "photo", required = false) MultipartFile photoFile) {
+        return ResponseEntity.ok(newsArticleService.update(id, newsArticleDto, photoFile));
     }
 
     @DeleteMapping("/{id}")

@@ -12,7 +12,7 @@ public interface NewsArticleService {
 
     NewsArticleDto create(NewsArticleDto newsArticleDto, MultipartFile photoFile);
 
-    NewsArticleDto update(String id, NewsArticleDto newsArticleDto);
+    NewsArticleDto update(String id, NewsArticleDto newsArticleDto, MultipartFile photoFile);
 
     void deleteById(String id);
 }
