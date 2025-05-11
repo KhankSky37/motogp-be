@@ -5,8 +5,10 @@ import com.example.motogp_b.service.NewsArticleService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -22,9 +24,10 @@ public class NewsArticleController {
         return ResponseEntity.ok(newsArticleService.findAll());
     }
 
-    @PostMapping
-    ResponseEntity<NewsArticleDto> createNewsArticle(@RequestBody NewsArticleDto newsArticleDto) {
-        return ResponseEntity.ok(newsArticleService.create(newsArticleDto));
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    ResponseEntity<NewsArticleDto> createNewsArticle(@RequestPart("newsArticle") NewsArticleDto newsArticleDto,
+                                                     @RequestPart("photo") MultipartFile photoFile) {
+        return ResponseEntity.ok(newsArticleService.create(newsArticleDto, photoFile));
     }
 
     @GetMapping("/{id}")

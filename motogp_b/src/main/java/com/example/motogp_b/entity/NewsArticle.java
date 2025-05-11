@@ -28,4 +28,6 @@ public class NewsArticle extends BaseEntity {
     @Column(name = "article_link")
     private String articleLink;
 
+    @Column(name = "article_type")
+    private String articleType;
 }
