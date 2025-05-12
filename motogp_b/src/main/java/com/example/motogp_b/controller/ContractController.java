@@ -18,8 +18,8 @@ public class ContractController {
     ContractService contractService;
 
     @GetMapping
-    ResponseEntity<List<ContractDto>> getContracts() {
-        return ResponseEntity.ok(contractService.findAll());
+    ResponseEntity<List<ContractDto>> getContracts(ContractDto contractDto) {
+        return ResponseEntity.ok(contractService.findAll(contractDto));
     }
 
     @PostMapping

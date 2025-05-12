@@ -5,7 +5,7 @@ import com.example.motogp_b.dto.ContractDto;
 import java.util.List;
 
 public interface ContractService {
-    List<ContractDto> findAll();
+    List<ContractDto> findAll(ContractDto contractDto);
 
     ContractDto findById(String id);
 

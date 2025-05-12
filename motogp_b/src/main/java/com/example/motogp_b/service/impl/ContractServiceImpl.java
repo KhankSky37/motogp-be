@@ -20,8 +20,8 @@ public class ContractServiceImpl implements ContractService {
     ModelMapper modelMapper;
 
     @Override
-    public List<ContractDto> findAll() {
-        return contractRepository.findAll().stream()
+    public List<ContractDto> findAll(ContractDto contractDto) {
+        return contractRepository.findAllContract(contractDto).stream()
                 .map(contract -> modelMapper.map(contract, ContractDto.class))
                 .toList();
     }
