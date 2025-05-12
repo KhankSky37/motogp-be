@@ -20,8 +20,8 @@ public class NewsArticleController {
     NewsArticleService newsArticleService;
 
     @GetMapping
-    ResponseEntity<List<NewsArticleDto>> getNewsArticles() {
-        return ResponseEntity.ok(newsArticleService.findAll());
+    ResponseEntity<List<NewsArticleDto>> getNewsArticles(@RequestParam(required = false) String keyword) {
+        return ResponseEntity.ok(newsArticleService.findAll(keyword));
     }
 
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})

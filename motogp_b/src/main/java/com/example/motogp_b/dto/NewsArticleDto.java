@@ -25,4 +25,5 @@ public class NewsArticleDto{
     Instant publishDate;
     String imageUrl;
     String articleLink;
+    String articleType;
 }

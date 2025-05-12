@@ -28,8 +28,8 @@ public class NewsArticleServiceImpl implements NewsArticleService {
 
     private static final String NEWSARTICLE_SUBDIRECTORY = "news";
     @Override
-    public List<NewsArticleDto> findAll() {
-        return newsArticleRepository.findAll().stream()
+    public List<NewsArticleDto> findAll(String keyword) {
+        return newsArticleRepository.findAllNewsArticles(keyword).stream()
                 .map(article -> modelMapper.map(article, NewsArticleDto.class))
                 .toList();
     }
@@ -83,7 +83,6 @@ public class NewsArticleServiceImpl implements NewsArticleService {
         }
 
         modelMapper.map(newsArticleDto, existingArticle);
-        existingArticle.setId(newArticleId); // Or ensure DTO mapping handles this if ID is part of DTO general mapping
         existingArticle.setImageUrl(newImageUrl); // Set the potentially updated image URL
 
         NewsArticle updatedArticle = newsArticleRepository.save(existingArticle);

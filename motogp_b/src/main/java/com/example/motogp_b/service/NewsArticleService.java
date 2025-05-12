@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface NewsArticleService {
-    List<NewsArticleDto> findAll();
+    List<NewsArticleDto> findAll(String keyword);
 
     NewsArticleDto findById(String id);
 
