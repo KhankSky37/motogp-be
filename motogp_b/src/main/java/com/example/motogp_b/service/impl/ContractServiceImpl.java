@@ -40,6 +40,7 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public ContractDto update(String id, ContractDto contractDto) {
         Contract contract = modelMapper.map(contractDto, Contract.class);
+        contract.setId(id);
         return modelMapper.map(contractRepository.save(contract), ContractDto.class);
     }
 
