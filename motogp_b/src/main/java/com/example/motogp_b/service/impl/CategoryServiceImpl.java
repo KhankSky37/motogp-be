@@ -44,13 +44,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto update(String id, CategoryDto categoryDto) {
-        // Kiểm tra nếu ID mới khác với ID cũ và đã tồn tại
-        if (!id.equals(categoryDto.getCategoryId())
-                && categoryRepository.existsByCategoryId(categoryDto.getCategoryId())) {
-            throw new RuntimeException("ID danh mục đã tồn tại. Vui lòng sử dụng ID khác.");
-        }
+        Category category = categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Không tìm thấy danh mục với ID: " + id));
+        category.setName(categoryDto.getName());
 
-        Category category = modelMapper.map(categoryDto, Category.class);
         return modelMapper.map(categoryRepository.save(category), CategoryDto.class);
     }
 
