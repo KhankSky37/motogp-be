@@ -1,5 +1,6 @@
 package com.example.motogp_b.dto;
 
+import com.example.motogp_b.entity.Event;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -24,4 +25,5 @@ public class SessionDto{
     CategoryDto category;
     String sessionType;
     Instant sessionDatetime;
+    EventSummaryDto event;
 }

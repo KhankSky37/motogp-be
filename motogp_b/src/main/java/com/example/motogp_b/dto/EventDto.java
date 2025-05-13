@@ -29,5 +29,5 @@ public class EventDto{
     LocalDate startDate;
     LocalDate endDate;
     String eventType;
-    Set<SessionDto> sessions;
+    Set<SessionSummaryDto> sessions;
 }

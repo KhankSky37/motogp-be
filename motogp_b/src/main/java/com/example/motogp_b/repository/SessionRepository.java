@@ -13,7 +13,7 @@ import java.util.List;
 public interface SessionRepository extends JpaRepository<Session, String> {
     @Query("SELECT s FROM Session s WHERE " +
             "(:eventId IS NULL OR s.event.id = :eventId) AND " +
-            "(:categoryId IS NULL OR s.category.id = :categoryId) AND " +
+            "(:categoryId IS NULL OR s.category.categoryId = :categoryId) AND " +
             "(:sessionType IS NULL OR s.sessionType = :sessionType) AND " +
             "(:fromDate IS NULL OR s.sessionDatetime >= :fromDate) AND " +
             "(:toDate IS NULL OR s.sessionDatetime <= :toDate)")
