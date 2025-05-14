@@ -2,6 +2,7 @@ package com.example.motogp_b.service.impl;
 
 import com.example.motogp_b.dto.EventDto;
 import com.example.motogp_b.entity.Event;
+import com.example.motogp_b.entity.Session;
 import com.example.motogp_b.repository.EventRepository;
 import com.example.motogp_b.service.EventService;
 import lombok.AccessLevel;
@@ -11,7 +12,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +48,39 @@ public class EventServiceImpl implements EventService {
         return events.stream()
                 .map(event -> modelMapper.map(event, EventDto.class))
                 .toList();
+    }
+
+    @Override
+    public List<EventDto> getEventSearchOptions(Integer seasonId, String eventType) {
+        List<Event> events = eventRepository.findAllWithFilters(null, seasonId, null, eventType, null, null);
+
+        if (events == null || events.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return events.stream().map(event -> {
+            EventDto eventDto = modelMapper.map(event, EventDto.class);
+
+            Set<Session> sessionsForEvent = event.getSessions();
+            if (sessionsForEvent != null && !sessionsForEvent.isEmpty()) {
+                Set<String> categoryIds = sessionsForEvent.stream()
+                        .filter(session -> session.getCategory() != null && session.getCategory().getCategoryId() != null)
+                        .map(session -> session.getCategory().getCategoryId())
+                        .collect(Collectors.toSet());
+
+                Set<String> sessionTypes = sessionsForEvent.stream()
+                        .map(Session::getSessionType)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toSet());
+
+                eventDto.setCategoryIds(categoryIds);
+                eventDto.setSessionTypes(sessionTypes);
+            } else {
+                eventDto.setCategoryIds(Collections.emptySet());
+                eventDto.setSessionTypes(Collections.emptySet());
+            }
+            return eventDto;
+        }).collect(Collectors.toList());
     }
 
     @Override

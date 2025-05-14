@@ -30,4 +30,7 @@ public class EventDto{
     LocalDate endDate;
     String eventType;
     Set<SessionSummaryDto> sessions;
+
+    Set<String> categoryIds;
+    Set<String> sessionTypes;
 }
