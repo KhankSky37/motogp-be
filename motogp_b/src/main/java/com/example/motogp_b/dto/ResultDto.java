@@ -20,7 +20,6 @@ public class ResultDto{
     Date modifiedDate;
     String modifiedUser;
     String id;
-    SessionDto session;
     RiderDto rider;
     TeamDto team;
     Integer position;

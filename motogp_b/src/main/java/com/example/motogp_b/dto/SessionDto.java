@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * DTO for {@link com.example.motogp_b.entity.Session}
@@ -26,4 +27,5 @@ public class SessionDto{
     String sessionType;
     Instant sessionDatetime;
     EventSummaryDto event;
+    Set<ResultDto> results;
 }
