@@ -28,7 +28,6 @@ public class ResultDto{
     Integer timeMillis;
     Integer gapMillis;
     Integer laps;
-    Integer points;
     String status;
     ManufacturerDto manufacturer;
 
