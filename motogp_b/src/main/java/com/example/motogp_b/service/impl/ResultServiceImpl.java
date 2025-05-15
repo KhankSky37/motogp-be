@@ -2,7 +2,9 @@ package com.example.motogp_b.service.impl;
 
 import com.example.motogp_b.dto.ResultDto;
 import com.example.motogp_b.entity.Result;
+import com.example.motogp_b.entity.Session;
 import com.example.motogp_b.repository.ResultRepository;
+import com.example.motogp_b.repository.SessionRepository;
 import com.example.motogp_b.service.ResultService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ResultServiceImpl implements ResultService {
     ResultRepository resultRepository;
+    SessionRepository sessionRepository;
     ModelMapper modelMapper;
 
     @Override
@@ -29,7 +32,13 @@ public class ResultServiceImpl implements ResultService {
     public List<ResultDto> findAll(String sessionId, String riderId, String teamId, String manufacturerId, Integer position,
             String status) {
         return resultRepository.search(sessionId, riderId, teamId, manufacturerId, position, status).stream()
-                .map(result -> modelMapper.map(result, ResultDto.class))
+                .map(resultEntity -> {
+                    ResultDto resultDto = modelMapper.map(resultEntity, ResultDto.class);
+                    if (resultEntity.getSession() != null) {
+                        resultDto.setSessionId(resultEntity.getSession().getId());
+                    }
+                    return resultDto;
+                })
                 .toList();
     }
 
@@ -43,6 +52,10 @@ public class ResultServiceImpl implements ResultService {
     @Override
     public ResultDto create(ResultDto resultDto) {
         Result result = modelMapper.map(resultDto, Result.class);
+        if(resultDto.getSessionId()!= null) {
+            Session session = sessionRepository.findById(resultDto.getSessionId()).orElse(null);
+            result.setSession(session);
+        }
         return modelMapper.map(resultRepository.save(result), ResultDto.class);
     }
 

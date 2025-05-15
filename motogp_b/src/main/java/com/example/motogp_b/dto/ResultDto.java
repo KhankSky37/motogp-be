@@ -1,9 +1,11 @@
 package com.example.motogp_b.dto;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -29,4 +31,6 @@ public class ResultDto{
     Integer points;
     String status;
     ManufacturerDto manufacturer;
+
+    String sessionId;
 }
