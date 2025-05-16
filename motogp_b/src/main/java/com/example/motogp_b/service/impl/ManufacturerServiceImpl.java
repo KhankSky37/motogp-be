@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,18 +54,29 @@ public class ManufacturerServiceImpl implements ManufacturerService {
     @Override
     public ManufacturerDto update(String id, ManufacturerDto manufacturerDto) {
         // Kiểm tra xem manufacturer có tồn tại không
-        manufacturerRepository.findById(id)
+        Manufacturer existingManufacturer = manufacturerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy nhà sản xuất với ID: " + id));
 
-        // Đảm bảo ID được giữ nguyên
-        manufacturerDto.setId(id);
+        // Chỉ cập nhật các trường cần thiết, giữ nguyên thông tin audit
+        existingManufacturer.setName(manufacturerDto.getName());
+        existingManufacturer.setLocationCountry(manufacturerDto.getLocationCountry());
 
-        Manufacturer manufacturer = modelMapper.map(manufacturerDto, Manufacturer.class);
-        return modelMapper.map(manufacturerRepository.save(manufacturer), ManufacturerDto.class);
+        // Lưu entity đã cập nhật và trả về DTO
+        Manufacturer updatedManufacturer = manufacturerRepository.save(existingManufacturer);
+        return modelMapper.map(updatedManufacturer, ManufacturerDto.class);
     }
 
     @Override
     public void deleteById(String id) {
-        manufacturerRepository.deleteById(id);
+        try {
+            manufacturerRepository.deleteById(id);
+        } catch (DataIntegrityViolationException ex) {
+            throw new DataIntegrityViolationException(
+                    "Cannot delete manufacturer with ID: " + id +
+                            ". It is referenced by teams or race results. Please update or remove those records first.");
+        } catch (Exception ex) {
+            throw new RuntimeException("Failed to delete manufacturer with ID: " + id +
+                    ". Error: " + ex.getMessage(), ex);
+        }
     }
 }

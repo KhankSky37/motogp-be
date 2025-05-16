@@ -64,7 +64,8 @@ public class EventServiceImpl implements EventService {
             Set<Session> sessionsForEvent = event.getSessions();
             if (sessionsForEvent != null && !sessionsForEvent.isEmpty()) {
                 Set<String> categoryIds = sessionsForEvent.stream()
-                        .filter(session -> session.getCategory() != null && session.getCategory().getCategoryId() != null)
+                        .filter(session -> session.getCategory() != null
+                                && session.getCategory().getCategoryId() != null)
                         .map(session -> session.getCategory().getCategoryId())
                         .collect(Collectors.toSet());
 
@@ -96,8 +97,19 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventDto update(String id, EventDto eventDto) {
-        Event event = modelMapper.map(eventDto, Event.class);
-        return modelMapper.map(eventRepository.save(event), EventDto.class);
+        // Kiểm tra xem bản ghi cần cập nhật có tồn tại không
+        Event existingEvent = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found with ID: " + id));
+
+        // Cập nhật thông tin từ DTO vào entity hiện có
+        modelMapper.map(eventDto, existingEvent);
+
+        // Đảm bảo ID không bị thay đổi
+        existingEvent.setId(id);
+
+        // Lưu entity đã cập nhật và trả về DTO
+        Event updatedEvent = eventRepository.save(existingEvent);
+        return modelMapper.map(updatedEvent, EventDto.class);
     }
 
     @Override
