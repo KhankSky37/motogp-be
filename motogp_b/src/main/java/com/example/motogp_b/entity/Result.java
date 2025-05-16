@@ -38,9 +38,6 @@ public class Result extends BaseEntity{
     @Column(name = "laps")
     private Integer laps;
 
-    @Column(name = "points")
-    private Integer points;
-
     @Column(name = "status")
     private String status;
 
