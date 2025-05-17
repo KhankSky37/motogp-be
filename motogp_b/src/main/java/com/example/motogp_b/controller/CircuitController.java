@@ -22,14 +22,17 @@ public class CircuitController {
     @GetMapping
     ResponseEntity<List<CircuitDto>> getCircuits(
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String country) {
+            @RequestParam(required = false) String locationCountry) {
+
+        System.out.println("Search request received - keyword: " + keyword + ", locationCountry: " + locationCountry);
 
         CircuitDto circuitDto = new CircuitDto();
         circuitDto.setKeyword(keyword);
 
-        // Map country to locationCountry if provided
-        if (country != null && !country.isEmpty()) {
-            circuitDto.setLocationCountry(country);
+        // Set locationCountry if provided
+        if (locationCountry != null && !locationCountry.isEmpty()) {
+            System.out.println("Setting locationCountry: " + locationCountry);
+            circuitDto.setLocationCountry(locationCountry);
         }
 
         return ResponseEntity.ok(circuitService.findAll(circuitDto));
