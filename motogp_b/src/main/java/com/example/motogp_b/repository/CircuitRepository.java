@@ -18,6 +18,9 @@ public interface CircuitRepository extends JpaRepository<Circuit, String> {
                   c.name LIKE %:#{#circuitDto.keyword}% OR
                   c.locationCity LIKE %:#{#circuitDto.keyword}% OR
                   c.locationCountry LIKE %:#{#circuitDto.keyword}% )
+                AND
+                ( :#{#circuitDto.locationCountry} IS NULL OR :#{#circuitDto.locationCountry} = '' OR
+                  c.locationCountry = :#{#circuitDto.locationCountry} )
             """)
     List<Circuit> findAllCircuits(@Param("circuitDto") CircuitDto circuitDto);
 }
