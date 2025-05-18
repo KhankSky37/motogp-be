@@ -30,8 +30,28 @@ public class SessionServiceImpl implements SessionService {
             sessions = sessionRepository.findAll();
         } else {
             // Convert string dates to Instant if provided
-            Instant fromDate = dateFrom != null && !dateFrom.isEmpty() ? Instant.parse(dateFrom) : null;
-            Instant toDate = dateTo != null && !dateTo.isEmpty() ? Instant.parse(dateTo) : null;
+            Instant fromDate = null;
+            Instant toDate = null;
+
+            try {
+                // Parse format from frontend (YYYY-MM-DD HH:mm)
+                if (dateFrom != null && !dateFrom.isEmpty()) {
+                    fromDate = java.time.LocalDateTime.parse(
+                            dateFrom.replace(" ", "T"),
+                            java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
+                            .atZone(java.time.ZoneId.systemDefault()).toInstant();
+                }
+
+                if (dateTo != null && !dateTo.isEmpty()) {
+                    toDate = java.time.LocalDateTime.parse(
+                            dateTo.replace(" ", "T"),
+                            java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
+                            .atZone(java.time.ZoneId.systemDefault()).toInstant();
+                }
+            } catch (Exception e) {
+                // Log error and continue with null dates
+                System.err.println("Error parsing date: " + e.getMessage());
+            }
 
             sessions = sessionRepository.search(eventId, categoryId, sessionType, fromDate, toDate);
         }
