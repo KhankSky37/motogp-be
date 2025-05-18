@@ -1,5 +1,7 @@
 package com.example.motogp_b.repository;
 
+import com.example.motogp_b.dto.RiderStandingDto;
+import com.example.motogp_b.dto.TeamStandingDto;
 import com.example.motogp_b.entity.Result;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -24,4 +26,33 @@ public interface ResultRepository extends JpaRepository<Result, String> {
             @Param("manufacturerId") String manufacturerId,
             @Param("position") Integer position,
             @Param("status") String status);
+
+    @Query("""
+            select new com.example.motogp_b.dto.RiderStandingDto(r.firstName,r.lastName,r.nationality,r.photoUrl,t.name,sum(r1.points))
+            from Rider r
+            inner join Contract c on r.riderId = c.riderId
+            inner join Team t on t.id = c.teamId
+            left join Result r1 on r1.rider.riderId = c.riderId
+            inner join Session s on s.id = r1.session.id
+            where (:seasonYear is NULL or c.seasonId = :seasonYear)
+            and (:categoryId is NULL or c.categoryId = :categoryId)
+            and (s.sessionType in ('race','sprint'))
+            group by r.riderId, r.firstName, r.lastName, r.nationality, r.photoUrl, t.name
+            """)
+    List<RiderStandingDto> getRiderStanding(@Param("seasonYear") String seasonYear,@Param("categoryId") String categoryId);
+
+    @Query("""
+           select new com.example.motogp_b.dto.TeamStandingDto(t.name,sum(r.points))
+           from Contract c
+           inner join Team t on t.id = c.teamId
+           left join Result r on r.team.id = c.teamId
+           left join Session s on s.id = r.session.id
+           where c.riderId = r.rider.riderId
+           and (:seasonYear is NULL or c.seasonId = :seasonYear)
+           and (:categoryId is NULL or c.categoryId = :categoryId)
+           and (s.sessionType in ('race','sprint'))
+           group by t.id, t.name
+           """)
+    List<TeamStandingDto> getTeamStanding(@Param("seasonYear") String seasonYear,@Param("categoryId") String categoryId);
+
 }

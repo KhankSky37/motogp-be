@@ -25,6 +25,7 @@ public class ResultDto{
     RiderDto rider;
     TeamDto team;
     Integer position;
+    Integer points;
     Integer timeMillis;
     Integer gapMillis;
     Integer laps;

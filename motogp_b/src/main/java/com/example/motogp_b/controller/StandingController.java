@@ -1,5 +1,6 @@
 package com.example.motogp_b.controller;
 
+import com.example.motogp_b.service.StandingService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -12,17 +13,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StandingController {
+    StandingService standingService;
 
     @RequestMapping("/riders")
-    public ResponseEntity<?> getRiderStandings() {
-
-        return ResponseEntity.ok("Rider Standings");
+    public ResponseEntity<?> getRiderStandings(String seasonYear, String categoryId) {
+        return ResponseEntity.ok(standingService.getRiderStandings(seasonYear, categoryId));
     }
 
     @RequestMapping("/teams")
-    public ResponseEntity<?> getTeamStandings() {
-
-        return ResponseEntity.ok("Rider Standings");
+    public ResponseEntity<?> getTeamStandings(String seasonYear, String categoryId) {
+        return ResponseEntity.ok(standingService.getTeamStandings(seasonYear, categoryId));
     }
 
     @RequestMapping("/constructors")
