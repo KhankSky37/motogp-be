@@ -38,6 +38,7 @@ public interface ResultRepository extends JpaRepository<Result, String> {
             and (:categoryId is NULL or c.categoryId = :categoryId)
             and (s.sessionType in ('race','sprint'))
             group by r.riderId, r.firstName, r.lastName, r.nationality, r.photoUrl, t.name
+            order by sum(r1.points) desc
             """)
     List<RiderStandingDto> getRiderStanding(@Param("seasonYear") String seasonYear,@Param("categoryId") String categoryId);
 
@@ -52,6 +53,7 @@ public interface ResultRepository extends JpaRepository<Result, String> {
            and (:categoryId is NULL or c.categoryId = :categoryId)
            and (s.sessionType in ('race','sprint'))
            group by t.id, t.name
+           order by sum(r.points) desc
            """)
     List<TeamStandingDto> getTeamStanding(@Param("seasonYear") String seasonYear,@Param("categoryId") String categoryId);
 

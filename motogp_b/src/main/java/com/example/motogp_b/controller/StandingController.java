@@ -15,26 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class StandingController {
     StandingService standingService;
 
-    @RequestMapping("/riders")
-    public ResponseEntity<?> getRiderStandings(String seasonYear, String categoryId) {
-        return ResponseEntity.ok(standingService.getRiderStandings(seasonYear, categoryId));
+    @RequestMapping
+    public ResponseEntity<?> getRiderStandings(String seasonYear, String categoryId, String type) {
+        if ("rider".equals(type)) {
+            return ResponseEntity.ok(standingService.getRiderStandings(seasonYear, categoryId));
+        } else if ("team".equals(type)) {
+            return ResponseEntity.ok(standingService.getTeamStandings(seasonYear, categoryId));
+        } else return null;
     }
-
-    @RequestMapping("/teams")
-    public ResponseEntity<?> getTeamStandings(String seasonYear, String categoryId) {
-        return ResponseEntity.ok(standingService.getTeamStandings(seasonYear, categoryId));
-    }
-
-    @RequestMapping("/constructors")
-    public ResponseEntity<?> getConstructorStandings() {
-
-        return ResponseEntity.ok("Rider Standings");
-    }
-
-    @RequestMapping("/bmw")
-    public ResponseEntity<?> getBMWStandings() {
-
-        return ResponseEntity.ok("Rider Standings");
-    }
-
 }
