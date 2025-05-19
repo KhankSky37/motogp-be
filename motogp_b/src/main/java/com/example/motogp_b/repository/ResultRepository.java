@@ -1,5 +1,6 @@
 package com.example.motogp_b.repository;
 
+import com.example.motogp_b.dto.ConstructorStandingDto;
 import com.example.motogp_b.dto.RiderStandingDto;
 import com.example.motogp_b.dto.TeamStandingDto;
 import com.example.motogp_b.entity.Result;
@@ -71,5 +72,25 @@ public interface ResultRepository extends JpaRepository<Result, String> {
             order by sum(r1.points) desc
             """)
     List<RiderStandingDto> getRiderStandingByBMW(@Param("seasonYear") Integer seasonId);
+
+    @Query("""
+    SELECT new com.example.motogp_b.dto.ConstructorStandingDto(
+        r.manufacturer.id,
+        SUM(r.points)
+    )
+    FROM Result r
+    JOIN r.session s
+    WHERE s.sessionType = 'race'
+      AND (:categoryId IS NULL OR s.category.categoryId = :categoryId)
+      AND r.points = (
+          SELECT MAX(r2.points)
+          FROM Result r2
+          WHERE r2.session.id = r.session.id
+            AND r2.manufacturer.id = r.manufacturer.id
+      )
+    GROUP BY r.manufacturer.id
+    ORDER BY SUM(r.points) desc
+    """)
+    List<ConstructorStandingDto> getConstructorStanding(@Param("seasonYear") Integer seasonId, @Param("categoryId") String categoryId);
 
 }

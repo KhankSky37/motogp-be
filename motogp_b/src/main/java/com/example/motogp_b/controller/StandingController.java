@@ -23,6 +23,8 @@ public class StandingController {
             return ResponseEntity.ok(standingService.getTeamStandings(seasonYear, categoryId));
         } else if("BMW".equals(type)){
             return ResponseEntity.ok(standingService.getRiderStandingsByBMW(seasonYear));
+        }else if("constructor".equals(type)){
+            return ResponseEntity.ok(standingService.getConstructorStandings(seasonYear, categoryId));
         }
         else return null;
     }

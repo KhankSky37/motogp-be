@@ -1,5 +1,6 @@
 package com.example.motogp_b.service.impl;
 
+import com.example.motogp_b.dto.ConstructorStandingDto;
 import com.example.motogp_b.dto.RiderStandingDto;
 import com.example.motogp_b.dto.TeamStandingDto;
 import com.example.motogp_b.repository.ResultRepository;
@@ -29,5 +30,10 @@ public class StandingServiceImpl implements StandingService {
     @Override
     public List<RiderStandingDto> getRiderStandingsByBMW(Integer season) {
         return resultRepository.getRiderStandingByBMW(season);
+    }
+
+    @Override
+    public List<ConstructorStandingDto> getConstructorStandings(Integer season, String categoryId) {
+        return resultRepository.getConstructorStanding(season, categoryId);
     }
 }
