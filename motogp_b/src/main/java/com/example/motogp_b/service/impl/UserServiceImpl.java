@@ -23,6 +23,36 @@ public class UserServiceImpl implements UserService {
     ModelMapper modelMapper;
 
     @Override
+    public UserDto login(UserDto userDto) {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        User user = userRepository.findByEmail(userDto.getEmail());
+        if (user == null) {
+            throw new RuntimeException("User not found with email: " + userDto.getEmail());
+        }
+
+        if (!passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
+        return modelMapper.map(user, UserDto.class);
+    }
+
+    @Override
+    public String register(UserDto userDto) {
+        if (userDto.getPassword() == null || userDto.getConfirmPassword() == null || userDto.getPassword().isEmpty()) {
+            throw new IllegalArgumentException("Password and confirm password cannot be empty");
+        }
+        if (!userDto.getPassword().equals(userDto.getConfirmPassword())) {
+            throw new IllegalArgumentException("Password and confirm password do not match");
+        }
+        User user = modelMapper.map(userDto, User.class);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        user.setRole("USER");
+        User savedUser = userRepository.save(user);
+        return "User registered successfully with ID: " + savedUser.getId();
+    }
+
+    @Override
     public List<UserDto> findAll(UserDto userDto) {
         return userRepository.findAllUsers(userDto).stream()
                 .map(user -> modelMapper.map(user, UserDto.class))

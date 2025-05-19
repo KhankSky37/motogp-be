@@ -33,4 +33,5 @@ public class UserDto{
     String role;
 
     String keyword;
+    String confirmPassword;
 }

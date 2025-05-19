@@ -11,7 +11,6 @@ import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
-    //    User findByUsername(String username);
     @Query("""
             SELECT u FROM User u
             WHERE
@@ -24,4 +23,6 @@ public interface UserRepository extends JpaRepository<User, String> {
                   u.role = :#{#userDto.role} )
             """)
     List<User> findAllUsers(@Param("userDto") UserDto userDto);
+
+    User findByEmail(String email);
 }
