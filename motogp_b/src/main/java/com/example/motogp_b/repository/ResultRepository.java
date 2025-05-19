@@ -40,7 +40,7 @@ public interface ResultRepository extends JpaRepository<Result, String> {
             group by r.riderId, r.firstName, r.lastName, r.nationality, r.photoUrl, t.name
             order by sum(r1.points) desc
             """)
-    List<RiderStandingDto> getRiderStanding(@Param("seasonYear") String seasonYear,@Param("categoryId") String categoryId);
+    List<RiderStandingDto> getRiderStanding(@Param("seasonYear") Integer seasonId,@Param("categoryId") String categoryId);
 
     @Query("""
            select new com.example.motogp_b.dto.TeamStandingDto(t.name,sum(r.points))
@@ -55,6 +55,21 @@ public interface ResultRepository extends JpaRepository<Result, String> {
            group by t.id, t.name
            order by sum(r.points) desc
            """)
-    List<TeamStandingDto> getTeamStanding(@Param("seasonYear") String seasonYear,@Param("categoryId") String categoryId);
+    List<TeamStandingDto> getTeamStanding(@Param("seasonYear") Integer seasonId,@Param("categoryId") String categoryId);
+
+    @Query("""
+            select new com.example.motogp_b.dto.RiderStandingDto(r.firstName,r.lastName,r.nationality,r.photoUrl,t.name,sum(r1.points))
+            from Rider r
+            inner join Contract c on r.riderId = c.riderId
+            inner join Team t on t.id = c.teamId
+            left join Result r1 on r1.rider.riderId = c.riderId
+            inner join Session s on s.id = r1.session.id
+            where (:seasonYear is NULL or c.seasonId = :seasonYear)
+            and (c.categoryId = 'cat_motogp')
+            and (s.sessionType in ('q1','q2'))
+            group by r.riderId, r.firstName, r.lastName, r.nationality, r.photoUrl, t.name
+            order by sum(r1.points) desc
+            """)
+    List<RiderStandingDto> getRiderStandingByBMW(@Param("seasonYear") Integer seasonId);
 
 }

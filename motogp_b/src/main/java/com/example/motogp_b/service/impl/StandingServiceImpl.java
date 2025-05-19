@@ -17,12 +17,17 @@ import java.util.List;
 public class StandingServiceImpl implements StandingService {
     ResultRepository resultRepository;
     @Override
-    public List<RiderStandingDto> getRiderStandings(String season, String categoryId) {
+    public List<RiderStandingDto> getRiderStandings(Integer season, String categoryId) {
         return resultRepository.getRiderStanding(season, categoryId);
     }
 
     @Override
-    public List<TeamStandingDto> getTeamStandings(String season, String categoryId) {
+    public List<TeamStandingDto> getTeamStandings(Integer season, String categoryId) {
         return resultRepository.getTeamStanding(season, categoryId);
+    }
+
+    @Override
+    public List<RiderStandingDto> getRiderStandingsByBMW(Integer season) {
+        return resultRepository.getRiderStandingByBMW(season);
     }
 }

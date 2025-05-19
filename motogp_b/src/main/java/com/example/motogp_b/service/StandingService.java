@@ -6,6 +6,7 @@ import com.example.motogp_b.dto.TeamStandingDto;
 import java.util.List;
 
 public interface StandingService {
-    List<RiderStandingDto> getRiderStandings(String season, String categoryId);
-    List<TeamStandingDto> getTeamStandings(String season, String categoryId);
+    List<RiderStandingDto> getRiderStandings(Integer season, String categoryId);
+    List<TeamStandingDto> getTeamStandings(Integer season, String categoryId);
+    List<RiderStandingDto> getRiderStandingsByBMW(Integer season);
 }

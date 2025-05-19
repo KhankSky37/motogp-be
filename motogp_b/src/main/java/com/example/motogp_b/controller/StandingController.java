@@ -16,11 +16,14 @@ public class StandingController {
     StandingService standingService;
 
     @RequestMapping
-    public ResponseEntity<?> getRiderStandings(String seasonYear, String categoryId, String type) {
+    public ResponseEntity<?> getRiderStandings(Integer seasonYear, String categoryId, String type) {
         if ("rider".equals(type)) {
             return ResponseEntity.ok(standingService.getRiderStandings(seasonYear, categoryId));
         } else if ("team".equals(type)) {
             return ResponseEntity.ok(standingService.getTeamStandings(seasonYear, categoryId));
-        } else return null;
+        } else if("BMW".equals(type)){
+            return ResponseEntity.ok(standingService.getRiderStandingsByBMW(seasonYear));
+        }
+        else return null;
     }
 }
