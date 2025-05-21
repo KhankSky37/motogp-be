@@ -2,13 +2,17 @@ package com.example.motogp_b.service.impl;
 
 import com.example.motogp_b.dto.ManufacturerDto;
 import com.example.motogp_b.entity.Manufacturer;
+import com.example.motogp_b.entity.Result;
+import com.example.motogp_b.entity.Team;
 import com.example.motogp_b.repository.ManufacturerRepository;
+import com.example.motogp_b.repository.ResultRepository;
+import com.example.motogp_b.repository.TeamRepository;
 import com.example.motogp_b.service.ManufacturerService;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +23,8 @@ import java.util.Optional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ManufacturerServiceImpl implements ManufacturerService {
     ManufacturerRepository manufacturerRepository;
+    TeamRepository teamRepository;
+    ResultRepository resultRepository;
     ModelMapper modelMapper;
 
     @Override
@@ -67,13 +73,29 @@ public class ManufacturerServiceImpl implements ManufacturerService {
     }
 
     @Override
+    @Transactional
     public void deleteById(String id) {
         try {
+            // Get the manufacturer to be deleted
+            Manufacturer manufacturer = manufacturerRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy nhà sản xuất với ID: " + id));
+
+            // Set null for all Teams that reference this manufacturer
+            List<Team> teamsWithManufacturer = teamRepository.findByManufacturerId(id);
+            for (Team team : teamsWithManufacturer) {
+                team.setManufacturer(null);
+                teamRepository.save(team);
+            }
+
+            // Set null for all Results that reference this manufacturer
+            List<Result> resultsWithManufacturer = resultRepository.findByManufacturerId(id);
+            for (Result result : resultsWithManufacturer) {
+                result.setManufacturer(null);
+                resultRepository.save(result);
+            }
+
+            // Now safely delete the manufacturer
             manufacturerRepository.deleteById(id);
-        } catch (DataIntegrityViolationException ex) {
-            throw new DataIntegrityViolationException(
-                    "Cannot delete manufacturer with ID: " + id +
-                            ". It is referenced by teams or race results. Please update or remove those records first.");
         } catch (Exception ex) {
             throw new RuntimeException("Failed to delete manufacturer with ID: " + id +
                     ". Error: " + ex.getMessage(), ex);

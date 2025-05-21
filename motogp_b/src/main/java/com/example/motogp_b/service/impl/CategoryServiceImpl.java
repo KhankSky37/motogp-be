@@ -2,13 +2,17 @@ package com.example.motogp_b.service.impl;
 
 import com.example.motogp_b.dto.CategoryDto;
 import com.example.motogp_b.entity.Category;
+import com.example.motogp_b.entity.Session;
+
 import com.example.motogp_b.repository.CategoryRepository;
+import com.example.motogp_b.repository.SessionRepository;
 import com.example.motogp_b.service.CategoryService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,6 +21,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CategoryServiceImpl implements CategoryService {
     CategoryRepository categoryRepository;
+    SessionRepository sessionRepository;
     ModelMapper modelMapper;
 
     @Override
@@ -50,8 +55,14 @@ public class CategoryServiceImpl implements CategoryService {
         return modelMapper.map(categoryRepository.save(category), CategoryDto.class);
     }
 
+    @Transactional
     @Override
     public void deleteById(String id) {
+        List<Session> sessions = sessionRepository.findByCategoryCategoryId(id);
+        for (Session session : sessions) {
+            session.setCategory(null);
+            sessionRepository.save(session);
+        }
         categoryRepository.deleteById(id);
     }
 }

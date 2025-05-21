@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -158,7 +159,17 @@ public class ResultServiceImpl implements ResultService {
     }
 
     @Override
+    @Transactional
     public void deleteById(String id) {
-        resultRepository.deleteById(id);
+        try {
+            // Lấy result cần xóa
+            Result result = resultRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Result not found with ID: " + id));
+
+            // Xóa result
+            resultRepository.delete(result);
+        } catch (Exception e) {
+            throw new RuntimeException("Error deleting result: " + e.getMessage(), e);
+        }
     }
 }

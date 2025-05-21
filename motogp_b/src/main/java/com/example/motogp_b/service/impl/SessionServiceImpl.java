@@ -5,10 +5,15 @@ import com.example.motogp_b.entity.Session;
 import com.example.motogp_b.repository.SessionRepository;
 import com.example.motogp_b.service.SessionService;
 import lombok.AccessLevel;
+
+import com.example.motogp_b.entity.Result;
+import com.example.motogp_b.repository.ResultRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -18,6 +23,8 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SessionServiceImpl implements SessionService {
     SessionRepository sessionRepository;
+    ResultRepository resultRepository;
+ 
     ModelMapper modelMapper;
 
     @Override
@@ -78,8 +85,34 @@ public class SessionServiceImpl implements SessionService {
         return modelMapper.map(sessionRepository.save(session), SessionDto.class);
     }
 
-    @Override
-    public void deleteById(String id) {
-        sessionRepository.deleteById(id);
+   @Override
+@Transactional
+public void deleteById(String id) {
+    try {
+        // Lấy session cần xóa
+        Session session = sessionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Session not found with ID: " + id));
+
+        // Gỡ liên kết các result có liên kết đến session này
+        List<Result> resultsWithSession = resultRepository.findBySessionId(id);
+        for (Result result : resultsWithSession) {
+            result.setSession(null); // Gỡ quan hệ session
+            resultRepository.save(result);
+        }
+
+        // (Tùy chọn) Gỡ các result có liên kết đến manufacturer cùng id
+        List<Result> resultsWithManufacturer = resultRepository.findByManufacturerId(id);
+        for (Result result : resultsWithManufacturer) {
+            result.setManufacturer(null);
+            resultRepository.save(result);
+        }
+
+        // Cuối cùng xóa session
+        sessionRepository.delete(session);
+    } catch (Exception e) {
+        throw new RuntimeException("Error deleting session: " + e.getMessage(), e);
     }
+}
+
+    
 }
