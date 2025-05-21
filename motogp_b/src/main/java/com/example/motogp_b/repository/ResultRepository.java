@@ -13,6 +13,14 @@ import java.util.List;
 
 @Repository
 public interface ResultRepository extends JpaRepository<Result, String> {
+    List<Result> findByManufacturerId(String manufacturerId);
+
+    List<Result> findBySessionId(String sessionId);
+    
+
+    List<Result> findByTeamId(String teamId);
+    List<Result> findByRiderRiderId(String riderId);
+
     @Query("SELECT r FROM Result r WHERE " +
             "(:sessionId IS NULL OR r.session.id = :sessionId) AND " +
             "(:riderId IS NULL OR r.rider.riderId = :riderId) AND " +
@@ -41,22 +49,24 @@ public interface ResultRepository extends JpaRepository<Result, String> {
             group by r.riderId, r.firstName, r.lastName, r.nationality, r.photoUrl, t.name
             order by sum(r1.points) desc
             """)
-    List<RiderStandingDto> getRiderStanding(@Param("seasonYear") Integer seasonId,@Param("categoryId") String categoryId);
+    List<RiderStandingDto> getRiderStanding(@Param("seasonYear") Integer seasonId,
+            @Param("categoryId") String categoryId);
 
     @Query("""
-           select new com.example.motogp_b.dto.TeamStandingDto(t.name,sum(r.points))
-           from Contract c
-           inner join Team t on t.id = c.teamId
-           left join Result r on r.team.id = c.teamId
-           left join Session s on s.id = r.session.id
-           where c.riderId = r.rider.riderId
-           and (:seasonYear is NULL or c.seasonId = :seasonYear)
-           and (:categoryId is NULL or c.categoryId = :categoryId)
-           and (s.sessionType in ('race','sprint'))
-           group by t.id, t.name
-           order by sum(r.points) desc
-           """)
-    List<TeamStandingDto> getTeamStanding(@Param("seasonYear") Integer seasonId,@Param("categoryId") String categoryId);
+            select new com.example.motogp_b.dto.TeamStandingDto(t.name,sum(r.points))
+            from Contract c
+            inner join Team t on t.id = c.teamId
+            left join Result r on r.team.id = c.teamId
+            left join Session s on s.id = r.session.id
+            where c.riderId = r.rider.riderId
+            and (:seasonYear is NULL or c.seasonId = :seasonYear)
+            and (:categoryId is NULL or c.categoryId = :categoryId)
+            and (s.sessionType in ('race','sprint'))
+            group by t.id, t.name
+            order by sum(r.points) desc
+            """)
+    List<TeamStandingDto> getTeamStanding(@Param("seasonYear") Integer seasonId,
+            @Param("categoryId") String categoryId);
 
     @Query("""
             select new com.example.motogp_b.dto.RiderStandingDto(r.firstName,r.lastName,r.nationality,r.photoUrl,t.name,sum(r1.points))
@@ -74,23 +84,24 @@ public interface ResultRepository extends JpaRepository<Result, String> {
     List<RiderStandingDto> getRiderStandingByBMW(@Param("seasonYear") Integer seasonId);
 
     @Query("""
-    SELECT new com.example.motogp_b.dto.ConstructorStandingDto(
-        r.manufacturer.id,
-        SUM(r.points)
-    )
-    FROM Result r
-    JOIN r.session s
-    WHERE s.sessionType = 'race'
-      AND (:categoryId IS NULL OR s.category.categoryId = :categoryId)
-      AND r.points = (
-          SELECT MAX(r2.points)
-          FROM Result r2
-          WHERE r2.session.id = r.session.id
-            AND r2.manufacturer.id = r.manufacturer.id
-      )
-    GROUP BY r.manufacturer.id
-    ORDER BY SUM(r.points) desc
-    """)
-    List<ConstructorStandingDto> getConstructorStanding(@Param("seasonYear") Integer seasonId, @Param("categoryId") String categoryId);
+            SELECT new com.example.motogp_b.dto.ConstructorStandingDto(
+                r.manufacturer.id,
+                SUM(r.points)
+            )
+            FROM Result r
+            JOIN r.session s
+            WHERE s.sessionType = 'race'
+              AND (:categoryId IS NULL OR s.category.categoryId = :categoryId)
+              AND r.points = (
+                  SELECT MAX(r2.points)
+                  FROM Result r2
+                  WHERE r2.session.id = r.session.id
+                    AND r2.manufacturer.id = r.manufacturer.id
+              )
+            GROUP BY r.manufacturer.id
+            ORDER BY SUM(r.points) desc
+            """)
+    List<ConstructorStandingDto> getConstructorStanding(@Param("seasonYear") Integer seasonId,
+            @Param("categoryId") String categoryId);
 
 }

@@ -4,12 +4,14 @@ import com.example.motogp_b.dto.EventDto;
 import com.example.motogp_b.entity.Event;
 import com.example.motogp_b.entity.Session;
 import com.example.motogp_b.repository.EventRepository;
+import com.example.motogp_b.repository.SessionRepository;
 import com.example.motogp_b.service.EventService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class EventServiceImpl implements EventService {
     EventRepository eventRepository;
+    SessionRepository sessionRepository;
     ModelMapper modelMapper;
 
     @Override
@@ -114,6 +117,11 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void deleteById(String id) {
+        List<Session> sessions = sessionRepository.findByEventId(id);
+        for (Session session : sessions) {
+            session.setEvent(null); // Gỡ quan hệ event
+            sessionRepository.save(session);
+        }
         eventRepository.deleteById(id);
     }
 }

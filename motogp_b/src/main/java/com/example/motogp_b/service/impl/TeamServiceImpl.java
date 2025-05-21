@@ -7,11 +7,14 @@ import com.example.motogp_b.service.FileStorageService;
 import com.example.motogp_b.service.TeamService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
+import com.example.motogp_b.entity.Result;
+import com.example.motogp_b.repository.ResultRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import jakarta.transaction.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TeamServiceImpl implements TeamService {
     TeamRepository teamRepository;
+    ResultRepository resultRepository;
     ModelMapper modelMapper;
     FileStorageService fileStorageService;
 
@@ -130,9 +134,19 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
+    @Transactional
     public void deleteById(String id) {
         // Get team to delete its logo if exists
         teamRepository.findById(id).ifPresent(team -> {
+            // Handle associated results first
+            List<Result> results = resultRepository.findByTeamId(id);
+            for (Result result : results) {
+                result.setTeam(null); // Remove the association
+                resultRepository.save(result);
+            }
+           
+
+            // Then try to delete the logo if it exists
             if (StringUtils.hasText(team.getLogoUrl())) {
                 try {
                     fileStorageService.deleteFile(team.getLogoUrl());

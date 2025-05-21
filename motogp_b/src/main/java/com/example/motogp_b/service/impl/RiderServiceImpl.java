@@ -5,6 +5,8 @@ import com.example.motogp_b.entity.Rider;
 import com.example.motogp_b.repository.RiderRepository;
 import com.example.motogp_b.service.FileStorageService;
 import com.example.motogp_b.service.RiderService;
+import com.example.motogp_b.entity.Result;
+import com.example.motogp_b.repository.ResultRepository;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import java.util.Objects;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RiderServiceImpl implements RiderService {
     RiderRepository riderRepository;
+    ResultRepository resultRepository;
     ModelMapper modelMapper;
     FileStorageService fileStorageService;
 
@@ -95,10 +98,16 @@ public class RiderServiceImpl implements RiderService {
 
 
     @Override
+    @Transactional
     public void deleteById(String id) {
         riderRepository.findById(id).ifPresent(rider -> {
             try {
                 fileStorageService.deleteFile(rider.getPhotoUrl());
+                List<Result> results = resultRepository.findByRiderRiderId(id);
+                for (Result result : results) {
+                    result.setRider(null);
+                    resultRepository.save(result);
+                }
             } catch (IOException e) {
                 System.err.println("Could not delete photo file: " + rider.getPhotoUrl() + " for rider ID: " + id);
             }

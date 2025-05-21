@@ -2,9 +2,12 @@ package com.example.motogp_b.service.impl;
 
 import com.example.motogp_b.dto.SeasonDto;
 import com.example.motogp_b.entity.Season;
+import com.example.motogp_b.repository.EventRepository;
+import com.example.motogp_b.entity.Event;
 import com.example.motogp_b.repository.SeasonRepository;
 import com.example.motogp_b.service.SeasonService;
 import lombok.AccessLevel;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
@@ -18,6 +21,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SeasonServiceImpl implements SeasonService {
     SeasonRepository seasonRepository;
+    EventRepository eventRepository;
     ModelMapper modelMapper;
 
     @Override
@@ -74,7 +78,14 @@ public class SeasonServiceImpl implements SeasonService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Integer id) {
+      List<Event> events = eventRepository.findBySeasonId(id);
+      for (Event event : events) {
+          event.setSeason(null);
+          eventRepository.save(event);
+      }
+
         seasonRepository.deleteById(id);
     }
 }
