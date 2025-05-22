@@ -66,7 +66,13 @@ public class ResultServiceImpl implements ResultService {
     @Override
     public ResultDto findById(String id) {
         return resultRepository.findById(id)
-                .map(result -> modelMapper.map(result, ResultDto.class))
+                .map(result -> {
+                    ResultDto resultDto = modelMapper.map(result, ResultDto.class);
+                    if (result.getSession() != null) {
+                        resultDto.setSessionId(result.getSession().getId());
+                    }
+                    return resultDto;
+                })
                 .orElse(null);
     }
 
