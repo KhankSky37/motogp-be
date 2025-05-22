@@ -16,7 +16,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ResultDto{
+public class ResultDto {
     LocalDateTime createdDate;
     String createUser;
     Date modifiedDate;
@@ -33,4 +33,7 @@ public class ResultDto{
     ManufacturerDto manufacturer;
 
     String sessionId;
+    String riderId;
+    String teamId;
+    String manufacturerId;
 }

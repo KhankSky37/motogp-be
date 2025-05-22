@@ -3,8 +3,12 @@ package com.example.motogp_b.service.impl;
 import com.example.motogp_b.dto.EventDto;
 import com.example.motogp_b.entity.Event;
 import com.example.motogp_b.entity.Session;
+import com.example.motogp_b.entity.Circuit;
+import com.example.motogp_b.entity.Season;
 import com.example.motogp_b.repository.EventRepository;
 import com.example.motogp_b.repository.SessionRepository;
+import com.example.motogp_b.repository.CircuitRepository;
+import com.example.motogp_b.repository.SeasonRepository;
 import com.example.motogp_b.service.EventService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +30,8 @@ import java.util.stream.Collectors;
 public class EventServiceImpl implements EventService {
     EventRepository eventRepository;
     SessionRepository sessionRepository;
+    CircuitRepository circuitRepository;
+    SeasonRepository seasonRepository;
     ModelMapper modelMapper;
 
     @Override
@@ -104,8 +110,40 @@ public class EventServiceImpl implements EventService {
         Event existingEvent = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event not found with ID: " + id));
 
-        // Cập nhật thông tin từ DTO vào entity hiện có
-        modelMapper.map(eventDto, existingEvent);
+        // Cập nhật các trường cơ bản từ DTO
+        existingEvent.setName(eventDto.getName());
+        existingEvent.setOfficialName(eventDto.getOfficialName());
+        existingEvent.setStartDate(eventDto.getStartDate());
+        existingEvent.setEndDate(eventDto.getEndDate());
+        existingEvent.setEventType(eventDto.getEventType());
+
+        // Xử lý liên kết Circuit
+        if (eventDto.getCircuit() != null && eventDto.getCircuit().getId() != null) {
+            // Kiểm tra nếu circuit cần thay đổi
+            if (existingEvent.getCircuit() == null ||
+                    !existingEvent.getCircuit().getId().equals(eventDto.getCircuit().getId())) {
+                Circuit circuit = circuitRepository.findById(eventDto.getCircuit().getId())
+                        .orElseThrow(() -> new RuntimeException(
+                                "Circuit not found with ID: " + eventDto.getCircuit().getId()));
+                existingEvent.setCircuit(circuit);
+            }
+        } else if (eventDto.getCircuit() == null) {
+            existingEvent.setCircuit(null);
+        }
+
+        // Xử lý liên kết Season
+        if (eventDto.getSeason() != null && eventDto.getSeason().getId() != null) {
+            // Kiểm tra nếu season cần thay đổi
+            if (existingEvent.getSeason() == null ||
+                    !existingEvent.getSeason().getId().equals(eventDto.getSeason().getId())) {
+                Season season = seasonRepository.findById(eventDto.getSeason().getId())
+                        .orElseThrow(() -> new RuntimeException(
+                                "Season not found with ID: " + eventDto.getSeason().getId()));
+                existingEvent.setSeason(season);
+            }
+        } else if (eventDto.getSeason() == null) {
+            existingEvent.setSeason(null);
+        }
 
         // Đảm bảo ID không bị thay đổi
         existingEvent.setId(id);

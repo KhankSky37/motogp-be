@@ -3,8 +3,14 @@ package com.example.motogp_b.service.impl;
 import com.example.motogp_b.dto.ResultDto;
 import com.example.motogp_b.entity.Result;
 import com.example.motogp_b.entity.Session;
+import com.example.motogp_b.entity.Rider;
+import com.example.motogp_b.entity.Team;
+import com.example.motogp_b.entity.Manufacturer;
 import com.example.motogp_b.repository.ResultRepository;
 import com.example.motogp_b.repository.SessionRepository;
+import com.example.motogp_b.repository.RiderRepository;
+import com.example.motogp_b.repository.TeamRepository;
+import com.example.motogp_b.repository.ManufacturerRepository;
 import com.example.motogp_b.service.ResultService;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -16,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +30,9 @@ import java.util.List;
 public class ResultServiceImpl implements ResultService {
     ResultRepository resultRepository;
     SessionRepository sessionRepository;
+    RiderRepository riderRepository;
+    TeamRepository teamRepository;
+    ManufacturerRepository manufacturerRepository;
     ModelMapper modelMapper;
 
     private static final List<Integer> RACE_POINTS_DISTRIBUTION = Arrays.asList(
@@ -102,57 +112,95 @@ public class ResultServiceImpl implements ResultService {
 
     @Override
     public ResultDto update(String id, ResultDto resultDto) {
-        // Find the existing result to verify it exists
         Result existingResult = resultRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Result not found with id: " + id));
 
-        // Lưu lại các thông tin audit cũ
-        LocalDateTime createdDate = existingResult.getCreatedDate();
-        String createdBy = existingResult.getCreateUser();
+        // Cập nhật các trường cơ bản từ DTO
+        existingResult.setPosition(resultDto.getPosition());
+        existingResult.setTimeMillis(resultDto.getTimeMillis());
+        existingResult.setGapMillis(resultDto.getGapMillis());
+        existingResult.setLaps(resultDto.getLaps());
+        existingResult.setStatus(resultDto.getStatus());
+        // Không cập nhật createUser và createdDate ở đây, chúng nên được giữ nguyên
 
-        // Map from DTO but preserve the ID and session if not explicitly changed
-        Result result = modelMapper.map(resultDto, Result.class);
-        result.setId(id);
-
-        // Giữ lại thông tin audit
-        result.setCreatedDate(createdDate);
-        result.setCreateUser(createdBy);
-
-        // Calculate points based on position and session type, just like in create
-        // method
+        // Xử lý Session
         if (resultDto.getSessionId() != null) {
             Session session = sessionRepository.findById(resultDto.getSessionId())
                     .orElseThrow(() -> new RuntimeException("Session not found with id: " + resultDto.getSessionId()));
-            result.setSession(session);
-
-            String sessionTypeLower = session.getSessionType().toLowerCase();
-            Integer position = result.getPosition();
-
-            if (position != null && position > 0) {
-                int points = 0;
-                if ("race".equalsIgnoreCase(sessionTypeLower)) {
-                    points = getPointsFromDistribution(position, RACE_POINTS_DISTRIBUTION);
-                } else if ("sprint".equalsIgnoreCase(sessionTypeLower)) {
-                    points = getPointsFromDistribution(position, SPRINT_RACE_POINTS_DISTRIBUTION);
-                } else if (sessionTypeLower.startsWith("q")) {
-                    points = getPointsFromDistribution(position, RACE_POINTS_DISTRIBUTION);
-                }
-                result.setPoints(points);
-            } else {
-                result.setPoints(0);
-            }
+            existingResult.setSession(session);
         } else {
-            // If sessionId is not provided in the DTO, keep the existing session
-            result.setSession(existingResult.getSession());
-            result.setPoints(existingResult.getPoints()); // Keep existing points
+            existingResult.setSession(null); // Cho phép xóa session khỏi result
         }
 
-        Result savedResult = resultRepository.save(result);
-        ResultDto updatedDto = modelMapper.map(savedResult, ResultDto.class);
+        // Xử lý Rider
+        if (resultDto.getRiderId() != null) {
+            Rider rider = riderRepository.findById(resultDto.getRiderId())
+                    .orElseThrow(() -> new RuntimeException("Rider not found with id: " + resultDto.getRiderId()));
+            existingResult.setRider(rider);
+        } else {
+            existingResult.setRider(null);
+        }
 
-        // Explicitly set sessionId in the returning DTO
+        // Xử lý Team
+        if (resultDto.getTeamId() != null) {
+            Team team = teamRepository.findById(resultDto.getTeamId())
+                    .orElseThrow(() -> new RuntimeException("Team not found with id: " + resultDto.getTeamId()));
+            existingResult.setTeam(team);
+        } else {
+            existingResult.setTeam(null);
+        }
+
+        // Xử lý Manufacturer
+        if (resultDto.getManufacturerId() != null) {
+            Manufacturer manufacturer = manufacturerRepository.findById(resultDto.getManufacturerId())
+                    .orElseThrow(() -> new RuntimeException(
+                            "Manufacturer not found with id: " + resultDto.getManufacturerId()));
+            existingResult.setManufacturer(manufacturer);
+        } else {
+            existingResult.setManufacturer(null);
+        }
+
+        // Tính toán lại điểm dựa trên session và position mới (nếu có)
+        if (existingResult.getSession() != null && existingResult.getPosition() != null
+                && existingResult.getPosition() > 0) {
+            String sessionTypeLower = existingResult.getSession().getSessionType().toLowerCase();
+            Integer position = existingResult.getPosition();
+            int points = 0;
+            if ("race".equalsIgnoreCase(sessionTypeLower)) {
+                points = getPointsFromDistribution(position, RACE_POINTS_DISTRIBUTION);
+            } else if ("sprint".equalsIgnoreCase(sessionTypeLower)) {
+                points = getPointsFromDistribution(position, SPRINT_RACE_POINTS_DISTRIBUTION);
+            } else if (sessionTypeLower.startsWith("q")) { // Giả sử Q cũng có thể tính điểm tương tự Race
+                points = getPointsFromDistribution(position, RACE_POINTS_DISTRIBUTION);
+            }
+            existingResult.setPoints(points);
+        } else {
+            existingResult.setPoints(0); // Nếu không có session hoặc position hợp lệ, điểm là 0
+        }
+
+        Result savedResult = resultRepository.save(existingResult);
+
+        // Map lại sang DTO để trả về, đảm bảo các ID được phản ánh đúng
+        ResultDto updatedDto = modelMapper.map(savedResult, ResultDto.class);
         if (savedResult.getSession() != null) {
             updatedDto.setSessionId(savedResult.getSession().getId());
+        } else {
+            updatedDto.setSessionId(null);
+        }
+        if (savedResult.getRider() != null) {
+            updatedDto.setRiderId(savedResult.getRider().getRiderId());
+        } else {
+            updatedDto.setRiderId(null);
+        }
+        if (savedResult.getTeam() != null) {
+            updatedDto.setTeamId(savedResult.getTeam().getId());
+        } else {
+            updatedDto.setTeamId(null);
+        }
+        if (savedResult.getManufacturer() != null) {
+            updatedDto.setManufacturerId(savedResult.getManufacturer().getId());
+        } else {
+            updatedDto.setManufacturerId(null);
         }
 
         return updatedDto;
