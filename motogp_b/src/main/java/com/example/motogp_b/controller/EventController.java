@@ -31,6 +31,12 @@ public class EventController {
                 keyword, seasonId, circuitId, eventType, startDateFrom, startDateTo));
     }
 
+    @GetMapping("/search-options")
+    public ResponseEntity<List<EventDto>> getEventSearchOptions(Integer seasonId, String eventType) {
+        return ResponseEntity.ok(eventService.getEventSearchOptions(seasonId, eventType));
+    }
+
+
     @PostMapping
     ResponseEntity<EventDto> createEvent(@RequestBody EventDto eventDto) {
         return ResponseEntity.ok(eventService.create(eventDto));

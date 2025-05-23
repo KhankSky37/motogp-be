@@ -8,6 +8,8 @@ import com.example.motogp_b.service.FileStorageService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import com.example.motogp_b.entity.Event;
+import com.example.motogp_b.repository.EventRepository;
 import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CircuitServiceImpl implements CircuitService {
     CircuitRepository circuitRepository;
+    EventRepository eventRepository;
     ModelMapper modelMapper;
     FileStorageService fileStorageService;
 
@@ -89,11 +92,17 @@ public class CircuitServiceImpl implements CircuitService {
     }
 
     @Override
+    @Transactional
     public void deleteById(String id) {
         circuitRepository.findById(id).ifPresent(circuit -> {
             try {
                 if (StringUtils.hasText(circuit.getImageUrl())) {
                     fileStorageService.deleteFile(circuit.getImageUrl());
+                    List<Event> events = eventRepository.findByCircuitId(id);
+                    for (Event event : events) {
+                        event.setCircuit(null);
+                        eventRepository.save(event);
+                    }
                 }
             } catch (IOException e) {
                 System.err.println("Could not delete image file: " + circuit.getImageUrl() + " for circuit ID: " + id);

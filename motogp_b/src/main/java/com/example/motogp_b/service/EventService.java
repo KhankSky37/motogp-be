@@ -10,6 +10,8 @@ public interface EventService {
     List<EventDto> findAllWithFilters(String keyword, String seasonId, String circuitId,
             String eventType, String startDateFrom, String startDateTo);
 
+    List<EventDto> getEventSearchOptions(Integer seasonId, String eventType);
+
     EventDto findById(String id);
 
     EventDto create(EventDto eventDto);

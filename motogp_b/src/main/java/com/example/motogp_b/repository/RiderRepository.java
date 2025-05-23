@@ -15,6 +15,7 @@ public interface RiderRepository extends JpaRepository<Rider, String> {
 
     @Query("""
             SELECT r FROM Rider r
+            left join Contract c on r.riderId = c.riderId
             WHERE
                 ( :#{#riderDto.keyword} IS NULL OR :#{#riderDto.keyword} = '' OR
                   r.riderId LIKE %:#{#riderDto.keyword}% OR
@@ -23,6 +24,8 @@ public interface RiderRepository extends JpaRepository<Rider, String> {
             AND
                 ( :#{#riderDto.nationality} IS NULL OR :#{#riderDto.nationality} = '' OR
                   r.nationality = :#{#riderDto.nationality} )
+            AND (:#{#riderDto.teamId} IS NULL OR :#{#riderDto.teamId} = '' OR
+                  c.teamId = :#{#riderDto.teamId} )
             """)
     List<Rider> findAllRider(@Param("riderDto")RiderDto riderDto);
 }

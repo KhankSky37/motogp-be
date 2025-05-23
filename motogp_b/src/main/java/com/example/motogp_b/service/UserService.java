@@ -6,6 +6,10 @@ import com.example.motogp_b.dto.UserDto;
 import java.util.List;
 
 public interface UserService {
+    UserDto login(UserDto userDto);
+
+    String register(UserDto userDto);
+
     List<UserDto> findAll(UserDto userDto);
 
     UserDto findById(String id);
@@ -17,4 +21,5 @@ public interface UserService {
     void updatePassword(String id, PasswordDTO passwordDTO);
 
     void deleteById(String id);
+
 }

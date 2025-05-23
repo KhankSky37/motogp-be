@@ -18,6 +18,16 @@ import java.util.List;
 public class UserController {
     UserService userService;
 
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody UserDto userDto) {
+        return ResponseEntity.ok(userService.login(userDto));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody UserDto userDto) {
+        return ResponseEntity.ok(userService.register(userDto));
+    }
+
     @GetMapping
     ResponseEntity<List<UserDto>> getUsers(UserDto userDto) {
         return ResponseEntity.ok(userService.findAll(userDto));

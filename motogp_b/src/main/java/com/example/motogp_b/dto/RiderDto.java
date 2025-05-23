@@ -28,4 +28,5 @@ public class RiderDto{
     String photoUrl;
 
     String keyword;
+    String teamId;
 }

@@ -10,6 +10,6 @@ import java.util.Optional;
 public class appCofig {
     @Bean
     public AuditorAware<String> auditorProvider() {
-        return () -> Optional.of("TVK");
+        return () -> Optional.of("ADMIN");
     }
 }

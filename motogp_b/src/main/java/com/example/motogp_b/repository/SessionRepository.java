@@ -10,7 +10,9 @@ import java.time.Instant;
 import java.util.List;
 
 @Repository
-public interface SessionRepository extends JpaRepository<Session, String> {
+public interface SessionRepository extends JpaRepository<Session, String> { 
+        List<Session> findByEventId(String eventId);
+        List<Session> findByCategoryCategoryId(String categoryId);
     @Query("SELECT s FROM Session s WHERE " +
             "(:eventId IS NULL OR s.event.id = :eventId) AND " +
             "(:categoryId IS NULL OR s.category.categoryId = :categoryId) AND " +

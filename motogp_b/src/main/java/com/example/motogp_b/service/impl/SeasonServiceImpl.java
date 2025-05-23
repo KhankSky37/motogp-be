@@ -2,14 +2,18 @@ package com.example.motogp_b.service.impl;
 
 import com.example.motogp_b.dto.SeasonDto;
 import com.example.motogp_b.entity.Season;
+import com.example.motogp_b.repository.EventRepository;
+import com.example.motogp_b.entity.Event;
 import com.example.motogp_b.repository.SeasonRepository;
 import com.example.motogp_b.service.SeasonService;
 import lombok.AccessLevel;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -17,6 +21,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SeasonServiceImpl implements SeasonService {
     SeasonRepository seasonRepository;
+    EventRepository eventRepository;
     ModelMapper modelMapper;
 
     @Override
@@ -51,17 +56,36 @@ public class SeasonServiceImpl implements SeasonService {
 
     @Override
     public SeasonDto update(Integer id, SeasonDto seasonDto) {
-        // Kiểm tra nếu ID mới khác với ID cũ và đã tồn tại
-        if (!id.equals(seasonDto.getId()) && seasonRepository.existsById(seasonDto.getId())) {
-            throw new RuntimeException("ID mùa giải đã tồn tại. Vui lòng sử dụng ID khác.");
-        }
+        // Không cho phép thay đổi ID - luôn sử dụng ID từ đường dẫn
+        if (!id.equals(seasonDto.getId())) {
+            throw new RuntimeException("Không thể thay đổi ID mùa giải. ID phải giữ nguyên.");
+        } // Kiểm tra mùa giải có tồn tại không và lấy dữ liệu hiện có
+        Season existingSeason = seasonRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy mùa giải với ID: " + id));
 
-        Season season = modelMapper.map(seasonDto, Season.class);
-        return modelMapper.map(seasonRepository.save(season), SeasonDto.class);
+        // Lưu lại các trường tạo mới để không bị mất
+        LocalDateTime createdDate = existingSeason.getCreatedDate();
+        String createUser = existingSeason.getCreateUser();
+
+        // Map từ DTO mới vào entity
+        Season updatedSeason = modelMapper.map(seasonDto, Season.class);
+
+        // Giữ lại các trường tạo mới
+        updatedSeason.setCreatedDate(createdDate);
+        updatedSeason.setCreateUser(createUser);
+
+        return modelMapper.map(seasonRepository.save(updatedSeason), SeasonDto.class);
     }
 
     @Override
+    @Transactional
     public void deleteById(Integer id) {
+      List<Event> events = eventRepository.findBySeasonId(id);
+      for (Event event : events) {
+          event.setSeason(null);
+          eventRepository.save(event);
+      }
+
         seasonRepository.deleteById(id);
     }
 }
