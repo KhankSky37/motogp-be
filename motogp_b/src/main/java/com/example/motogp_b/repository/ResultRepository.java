@@ -45,7 +45,7 @@ public interface ResultRepository extends JpaRepository<Result, String> {
             inner join Session s on s.id = r1.session.id
             where (:seasonYear is NULL or c.seasonId = :seasonYear)
             and (:categoryId is NULL or c.categoryId = :categoryId)
-            and (s.sessionType in ('race','sprint'))
+            and (s.sessionType in ('RAC1','RAC2','SPR'))
             group by r.riderId, r.firstName, r.lastName, r.nationality, r.photoUrl, t.name
             order by sum(r1.points) desc
             """)
@@ -61,7 +61,7 @@ public interface ResultRepository extends JpaRepository<Result, String> {
             where c.riderId = r.rider.riderId
             and (:seasonYear is NULL or c.seasonId = :seasonYear)
             and (:categoryId is NULL or c.categoryId = :categoryId)
-            and (s.sessionType in ('race','sprint'))
+            and (s.sessionType in ('RAC1','RAC2','SPR'))
             group by t.id, t.name
             order by sum(r.points) desc
             """)
@@ -76,8 +76,8 @@ public interface ResultRepository extends JpaRepository<Result, String> {
             left join Result r1 on r1.rider.riderId = c.riderId
             inner join Session s on s.id = r1.session.id
             where (:seasonYear is NULL or c.seasonId = :seasonYear)
-            and (c.categoryId = 'cat_motogp')
-            and (s.sessionType in ('q1','q2'))
+            and (c.categoryId = 'motogp')
+            and (s.sessionType in ('Q1','Q2'))
             group by r.riderId, r.firstName, r.lastName, r.nationality, r.photoUrl, t.name
             order by sum(r1.points) desc
             """)
@@ -90,7 +90,7 @@ public interface ResultRepository extends JpaRepository<Result, String> {
             )
             FROM Result r
             JOIN r.session s
-            WHERE s.sessionType = 'race'
+            WHERE s.sessionType in ('RAC1','RAC2')
               AND (:categoryId IS NULL OR s.category.categoryId = :categoryId)
               AND r.points = (
                   SELECT MAX(r2.points)
