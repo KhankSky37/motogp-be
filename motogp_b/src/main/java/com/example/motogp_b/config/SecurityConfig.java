@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,20 +29,28 @@ public class SecurityConfig {
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh").permitAll()
-                                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                                .anyRequest().authenticated())
+                        auth
+                                // PUBLIC APIs (Authentication and all GET requests)
+                                .requestMatchers(HttpMethod.POST, "/auth/token", "/auth/introspect", "/auth/refresh").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/users/register", "/users/forgot-password", "/users/reset-password").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/**").permitAll() // Mở public tất cả các API GET
+
+                                // ADMIN APIs (All other methods: POST, PUT, DELETE, PATCH)
+                                .requestMatchers(HttpMethod.POST, "/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.PUT, "/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.PATCH, "/**").hasRole("ADMIN")
+                                .anyRequest().authenticated()
+                )
                 .oauth2ResourceServer(oauth2 ->
                         oauth2.jwt(jwtConfigurer -> jwtConfigurer
                                 .decoder(customJwtDecoder)
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                );
-        ;
-
+                );;
         return http.build();
     }
 

@@ -20,7 +20,6 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
     UserService userService;
-    EmailService emailService;
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserDto userDto) {
         return ResponseEntity.ok(userService.login(userDto));
