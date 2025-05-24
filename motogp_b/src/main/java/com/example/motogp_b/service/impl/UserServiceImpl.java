@@ -29,17 +29,6 @@ public class UserServiceImpl implements UserService {
     ModelMapper modelMapper;
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
     EmailService emailService;
-    @Override
-    public UserDto login(UserDto userDto) {
-        User user = userRepository.findByEmail(userDto.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + userDto.getEmail()));
-
-
-        if (!passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid password");
-        }
-        return modelMapper.map(user, UserDto.class);
-    }
 
     @Override
     public String register(UserDto userDto) {
