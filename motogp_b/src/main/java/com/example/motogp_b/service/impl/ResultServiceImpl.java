@@ -90,9 +90,9 @@ public class ResultServiceImpl implements ResultService {
 
             if (position != null && position > 0) {
                 int points = 0;
-                if ("race".equalsIgnoreCase(sessionTypeLower)) {
+                if ("rac1".equalsIgnoreCase(sessionTypeLower) || "rac2".equalsIgnoreCase(sessionTypeLower)) {
                     points = getPointsFromDistribution(position, RACE_POINTS_DISTRIBUTION);
-                } else if ("sprint".equalsIgnoreCase(sessionTypeLower)) {
+                } else if ("spr".equalsIgnoreCase(sessionTypeLower)) {
                     points = getPointsFromDistribution(position, SPRINT_RACE_POINTS_DISTRIBUTION);
                 } else if (sessionTypeLower.startsWith("q")) {
                     points = getPointsFromDistribution(position, RACE_POINTS_DISTRIBUTION);
@@ -172,11 +172,11 @@ public class ResultServiceImpl implements ResultService {
             String sessionTypeLower = existingResult.getSession().getSessionType().toLowerCase();
             Integer position = existingResult.getPosition();
             int points = 0;
-            if ("race".equalsIgnoreCase(sessionTypeLower)) {
+            if ("rac1".equalsIgnoreCase(sessionTypeLower) || "rac2".equalsIgnoreCase(sessionTypeLower)) {
                 points = getPointsFromDistribution(position, RACE_POINTS_DISTRIBUTION);
-            } else if ("sprint".equalsIgnoreCase(sessionTypeLower)) {
+            } else if ("spr".equalsIgnoreCase(sessionTypeLower)) {
                 points = getPointsFromDistribution(position, SPRINT_RACE_POINTS_DISTRIBUTION);
-            } else if (sessionTypeLower.startsWith("q")) { // Giả sử Q cũng có thể tính điểm tương tự Race
+            } else if (sessionTypeLower.startsWith("q")) {
                 points = getPointsFromDistribution(position, RACE_POINTS_DISTRIBUTION);
             }
             existingResult.setPoints(points);
