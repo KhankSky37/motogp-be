@@ -1,6 +1,8 @@
 package com.example.motogp_b.service;
 
+import com.example.motogp_b.dto.ForgotPasswordRequestDto;
 import com.example.motogp_b.dto.PasswordDTO;
+import com.example.motogp_b.dto.ResetPasswordRequestDto;
 import com.example.motogp_b.dto.UserDto;
 
 import java.util.List;
@@ -22,4 +24,7 @@ public interface UserService {
 
     void deleteById(String id);
 
+    String resetPassword(ResetPasswordRequestDto resetPasswordRequestDto);
+
+    String processForgotPassword(ForgotPasswordRequestDto forgotPasswordRequestDto);
 }

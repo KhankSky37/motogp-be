@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
@@ -24,5 +25,9 @@ public interface UserRepository extends JpaRepository<User, String> {
             """)
     List<User> findAllUsers(@Param("userDto") UserDto userDto);
 
-    User findByEmail(String email);
+//    User findByEmail(String email);
+
+    Optional<User> findByEmail(String email);
+
+    Optional<User> findByOtp(String otp);
 }

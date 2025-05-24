@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -48,4 +49,9 @@ public class User extends BaseEntity {
     @Column(name = "role")
     private String role;
 
+    @Column(name = "otp")
+    private String otp;
+
+    @Column(name = "otp_expiry_date")
+    private LocalDateTime otpExpiryDate;
 }

@@ -1,7 +1,10 @@
 package com.example.motogp_b.controller;
 
+import com.example.motogp_b.dto.ForgotPasswordRequestDto;
 import com.example.motogp_b.dto.PasswordDTO;
+import com.example.motogp_b.dto.ResetPasswordRequestDto;
 import com.example.motogp_b.dto.UserDto;
+import com.example.motogp_b.service.EmailService;
 import com.example.motogp_b.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +20,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
     UserService userService;
-
+    EmailService emailService;
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserDto userDto) {
         return ResponseEntity.ok(userService.login(userDto));
@@ -55,6 +58,26 @@ public class UserController {
             return ResponseEntity.ok("Password updated successfully");
         } catch (Exception e) {
             return ResponseEntity.ok(e.getMessage());
+        }
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequestDto forgotPasswordRequestDto) {
+        try {
+            String message = userService.processForgotPassword(forgotPasswordRequestDto);
+            return ResponseEntity.ok(message);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequestDto resetPasswordRequestDto) {
+        try {
+            String message = userService.resetPassword(resetPasswordRequestDto);
+            return ResponseEntity.ok(message);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
