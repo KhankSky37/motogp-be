@@ -37,6 +37,9 @@ public class SecurityConfig {
                                 // PUBLIC APIs (Authentication and all GET requests)
                                 .requestMatchers(HttpMethod.POST, "/auth/token", "/auth/introspect", "/auth/refresh").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/users/register", "/users/forgot-password", "/users/reset-password").permitAll()
+
+                                .requestMatchers(HttpMethod.GET, "/users/{id}").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/users/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/**").permitAll() // Mở public tất cả các API GET
 
                                 // ADMIN APIs (All other methods: POST, PUT, DELETE, PATCH)
