@@ -19,6 +19,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -60,7 +61,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:5137"); // ReactJS frontend
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+                "https://motogp-frontend.vercel.app",  // Frontend Vercel
+                "https://abc123.ngrok.io",             // URL ngrok của bạn
+                "http://localhost:5137",               // Frontend local
+                "http://localhost:3000"
+        ));
         configuration.addAllowedMethod("*"); // Cho phép tất cả các method (GET, POST, OPTIONS,...)
         configuration.addAllowedHeader("*"); // Cho phép tất cả headers
         configuration.setAllowCredentials(true); // Cho phép gửi cookie nếu cần
