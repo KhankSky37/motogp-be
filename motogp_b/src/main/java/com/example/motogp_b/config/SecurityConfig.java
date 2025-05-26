@@ -63,6 +63,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(Arrays.asList(
                 "https://motogp-frontend.vercel.app",  // Frontend Vercel
+                "https://motogp-k.me",                 // Custom domain (non-www)
+                "https://www.motogp-k.me",
                 "https://abc123.ngrok.io",             // URL ngrok của bạn
                 "http://localhost:5137",               // Frontend local
                 "http://localhost:3000"
