@@ -1,6 +1,7 @@
 package com.example.motogp_b.service.impl;
 
 import com.example.motogp_b.service.FileStorageService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,8 +17,22 @@ import java.util.UUID;
 @Service
 public class FileStorageServiceImpl implements FileStorageService {
 
-    private static final String BASE_UPLOAD_DIR = "static/uploads";
-    private static final Path BASE_UPLOAD_PATH = Paths.get(BASE_UPLOAD_DIR);
+    private final String baseUploadDir;
+    private final Path baseUploadPath;
+
+    public FileStorageServiceImpl(@Value("${upload.dir:static/uploads}") String uploadDir) {
+        this.baseUploadDir = uploadDir.endsWith("/") ? uploadDir.substring(0, uploadDir.length() - 1) : uploadDir;
+        this.baseUploadPath = Paths.get(this.baseUploadDir);
+
+        // Tạo thư mục nếu chưa tồn tại
+        try {
+            if (!Files.exists(this.baseUploadPath)) {
+                Files.createDirectories(this.baseUploadPath);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Không thể khởi tạo thư mục lưu trữ", e);
+        }
+    }
 
     @Override
     public String storeFile(MultipartFile file, String subDirectory) throws IOException {
@@ -25,7 +40,7 @@ public class FileStorageServiceImpl implements FileStorageService {
             return null;
         }
 
-        Path entityUploadPath = BASE_UPLOAD_PATH.resolve(subDirectory);
+        Path entityUploadPath = baseUploadPath.resolve(subDirectory);
         String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
         String fileExtension = "";
         int lastDotIndex = originalFilename.lastIndexOf('.');
@@ -45,12 +60,12 @@ public class FileStorageServiceImpl implements FileStorageService {
                 Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            String webPathPrefix = BASE_UPLOAD_DIR.substring(BASE_UPLOAD_DIR.indexOf('/') + 1).replace("\\", "/");
-            return "/" + webPathPrefix + "/" + subDirectory + "/" + uniqueFilename;
+            // Trả về đường dẫn web nhất quán với cơ sở dữ liệu
+            return "/uploads/" + subDirectory + "/" + uniqueFilename;
 
         } catch (IOException e) {
-            System.err.println("Could not save file: " + originalFilename + " in directory: " + subDirectory);
-            throw new IOException("Could not save file: " + originalFilename, e);
+            System.err.println("Không thể lưu file: " + originalFilename + " trong thư mục: " + subDirectory);
+            throw new IOException("Không thể lưu file: " + originalFilename, e);
         }
     }
 
@@ -61,16 +76,24 @@ public class FileStorageServiceImpl implements FileStorageService {
         }
 
         try {
-            String relativePath = fileUrl.startsWith("/") ? fileUrl.substring(1) : fileUrl;
-            Path filePath = Paths.get("src/main/resources/" + relativePath);
+            // Trích xuất đường dẫn tương đối sau /uploads/
+            String relativePath = fileUrl;
+            if (fileUrl.startsWith("/uploads/")) {
+                relativePath = fileUrl.substring("/uploads/".length());
+            } else if (fileUrl.startsWith("/")) {
+                relativePath = fileUrl.substring(1);
+            }
 
-            if (filePath.normalize().startsWith(Paths.get("src/main/resources/" + BASE_UPLOAD_DIR).normalize())) {
-                Files.deleteIfExists(filePath);
+            Path filePath = baseUploadPath.resolve(relativePath);
+
+            if (Files.exists(filePath)) {
+                Files.delete(filePath);
             } else {
-                System.err.println("Attempted to delete file outside of the designated upload directory: " + fileUrl);
+                System.err.println("Không tìm thấy file: " + filePath);
             }
         } catch (IOException e) {
-            System.err.println("Could not delete file: " + fileUrl);
+            System.err.println("Không thể xóa file: " + fileUrl);
+            throw e;
         }
     }
 }
