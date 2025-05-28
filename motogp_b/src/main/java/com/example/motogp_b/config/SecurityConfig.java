@@ -40,6 +40,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/users/register", "/users/forgot-password", "/users/reset-password").permitAll()
 
                                 .requestMatchers(HttpMethod.GET, "/users/{id}").authenticated()
+                                .requestMatchers(HttpMethod.PUT, "/users/change-password/{id}").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/users/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/**").permitAll() // Mở public tất cả các API GET
 
