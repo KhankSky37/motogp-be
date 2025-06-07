@@ -41,10 +41,37 @@ This project is a robust backend API for a MotoGP information platform, built wi
 Workspace
 Collecting workspace information
 
-Okay, I've reviewed the project structure and the code snippets you've provided. Based on that, here's a comprehensive README structure you can adapt for your GitHub profile to showcase this project for interviews.
+## 🏗️ Project Structure
 
-motogp_b/ ├── .mvn/ # Maven wrapper ├── src/ │ ├── main/ │ │ ├── java/com/example/motogp_b/ │ │ │ ├── config/ # Spring configurations (Security, ModelMapper, AuditorAware) │ │ │ ├── controller/ # REST API controllers │ │ │ ├── dto/ # Data Transfer Objects │ │ │ ├── entity/ # JPA entities │ │ │ ├── exception/ # Custom exception handlers │ │ │ ├── repository/ # Spring Data JPA repositories │ │ │ ├── service/ # Service interfaces │ │ │ │ └── impl/ # Service implementations │ │ │ └── MotogpBApplication.java # Main application class │ │ └── resources/ │ │ ├── application.properties # Application configuration │ │ └── static/ # Static resources (if any directly served) │ └── test/ # Unit and integration tests ├── static/ │ └── uploads/ # Default directory for uploaded files ├── pom.xml # Maven project configuration ├── mvnw # Maven wrapper (Linux/macOS) ├── mvnw.cmd # Maven wrapper (Windows) └── README.md # This file
-
+```
+motogp_b/
+├── .mvn/
+│   └── wrapper/
+│       └── maven-wrapper.properties
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/example/motogp_b/
+│   │   │       ├── config/
+│   │   │       ├── controller/
+│   │   │       ├── dto/
+│   │   │       ├── entity/
+│   │   │       ├── exception/
+│   │   │       ├── repository/
+│   │   │       ├── service/
+│   │   │       │   └── impl/
+│   │   │       └── MotogpBApplication.java
+│   │   └── resources/
+│   │       ├── application.properties
+│   │       └── static/
+│   └── test/
+│       └── java/
+│           └── com/example/motogp_b/
+├── pom.xml
+├── mvnw
+├── mvnw.cmd
+└── README.md
+```
 
 ## Setup and Installation
 
@@ -196,5 +223,3 @@ The API provides a comprehensive set of RESTful endpoints. Here's a general over
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change. Please make sure to update tests as appropriate.
 
 ---
-
-This README should give a good overview of your project. Remember to replace placeholders like `<your-repository-url>` and customize details specific to your final implementation. Good luck with your interviews!
