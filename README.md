@@ -129,14 +129,14 @@ Key configurations are managed in `src/main/resources/application.properties`:
     jwt.refresh.expiration=604800000 # 7 days in milliseconds
     ```
 *   **File Upload Directory:**
-    The default upload directory is `static/uploads`. This can be configured using an environment variable or application property, as handled in [`FileStorageServiceImpl.java`](src/main/java/com/example/motogp_b/service/impl/FileStorageServiceImpl.java).
+    The default upload directory is `static/uploads`. This can be configured using an environment variable or application property, as handled in [`FileStorageServiceImpl.java`](motogp_b/src/main/java/com/example/motogp_b/service/impl/FileStorageServiceImpl.java).
     ```properties
     # Example for overriding in application.properties
     upload.dir=./custom_uploads_directory
     ```
     Or via environment variable `UPLOAD_DIR`.
 *   **CORS Allowed Origins:**
-    Configured in [`SecurityConfig.java`](src/main/java/com/example/motogp_b/config/SecurityConfig.java).
+    Configured in [`SecurityConfig.java`](motogp_b/src/main/java/com/example/motogp_b/config/SecurityConfig.java).
 
 ## API Endpoints
 
