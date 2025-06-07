@@ -4,6 +4,7 @@
 
 This project is a robust backend API for a MotoGP information platform, built with Spring Boot. It serves as the data backbone for managing and delivering information about MotoGP seasons, events, riders, teams, manufacturers, race sessions, results, and news articles. The API includes features like user authentication and authorization using JWT, secure file uploads for images, and comprehensive data management capabilities.
 
+![background](motogp_b/static/uploads/bg.jpg)
 ## Core Features
 
 *   **User Authentication & Authorization:** Secure registration, login, and password management (forgot/reset password with OTP). Role-based access control (RBAC) using Spring Security and JWT.
