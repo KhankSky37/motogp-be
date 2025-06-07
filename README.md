@@ -168,12 +168,12 @@ The API provides a comprehensive set of RESTful endpoints. Here's a general over
 *   **Spring Security:** Handles authentication and authorization.
 *   **Password Encoding:** Passwords are securely hashed using `PasswordEncoder` (e.g., BCrypt).
 *   **Role-Based Access Control (RBAC):** Endpoints are protected based on user roles (e.g., `ROLE_USER`, `ROLE_ADMIN`). Method-level security can also be applied using `@PreAuthorize`.
-*   **CORS:** Configured in [`SecurityConfig.java`](src/main/java/com/example/motogp_b/config/SecurityConfig.java) to allow requests from specific frontend origins.
-*   **Auditing:** [`appCofig.java`](src/main/java/com/example/motogp_b/config/appCofig.java) and `@EnableJpaAuditing` in [`MotogpBApplication.java`](src/main/java/com/example/motogp_b/MotogpBApplication.java) ensure user and timestamp tracking for entity changes.
+*   **CORS:** Configured in [`SecurityConfig.java`](motogp_b/src/main/java/com/example/motogp_b/config/SecurityConfig.java) to allow requests from specific frontend origins.
+*   **Auditing:** [`appCofig.java`](motogp_b/src/main/java/com/example/motogp_b/config/appCofig.java) and `@EnableJpaAuditing` in [`MotogpBApplication.java`](motogp_b/src/main/java/com/example/motogp_b/MotogpBApplication.java) ensure user and timestamp tracking for entity changes.
 
 ## File Storage
 
-*   File uploads are handled by [`FileStorageServiceImpl.java`](src/main/java/com/example/motogp_b/service/impl/FileStorageServiceImpl.java).
+*   File uploads are handled by [`FileStorageServiceImpl.java`](motogp_b/src/main/java/com/example/motogp_b/service/impl/FileStorageServiceImpl.java).
 *   Uploaded files are stored with a unique `UUID` based filename to prevent collisions.
 *   The base upload directory is `static/uploads` but can be configured via the `upload.dir` property or `UPLOAD_DIR` environment variable.
 *   The service returns a web-accessible path for the stored file.
